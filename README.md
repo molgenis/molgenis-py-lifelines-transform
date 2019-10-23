@@ -32,5 +32,5 @@ Create a lifelines group if you haven't already and import the zipfile.
 # Download
 To download data+metadata from dev server:
 ```
-java -jar downloader-1.2.0.jar -o -f lifelines.zip -a admin -u https://backend-lifelines.test.molgenis.org/ lifelines_age_group lifelines_assessment lifelines_gender_group lifelines_section lifelines_sub_section lifelines_subsection_variable lifelines_tree lifelines_variable lifelines_variants lifelines_who_when lifelines_who
+ java -jar downloader-1.2.0.jar -o -f lifelines.zip -a admin -u https://backend-lifelines.test.molgenis.org/ -s 10000 lifelines_age_group lifelines_assessment lifelines_gender_group lifelines_section lifelines_sub_section lifelines_subsection_variable lifelines_tree lifelines_variable lifelines_variant lifelines_who_when lifelines_who
 ```
