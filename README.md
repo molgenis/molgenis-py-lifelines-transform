@@ -34,3 +34,11 @@ To download data+metadata from dev server:
 ```
  java -jar downloader-1.2.0.jar -o -f lifelines.zip -a admin -u https://backend-lifelines.test.molgenis.org/ -s 10000 lifelines_age_group lifelines_assessment lifelines_gender_group lifelines_section lifelines_sub_section lifelines_subsection_variable lifelines_tree lifelines_variable lifelines_variant lifelines_who_when lifelines_who
 ```
+
+# issues
+* age group indicators can all be null
+* variable label can be longer than 255 characters
+* what_when contains duplicates (but we dedupe them)
+* a couple of subsections (17 and up) are listed as sections in the tree
+* some of the who_when is not listed in the who
+

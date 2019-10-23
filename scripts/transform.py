@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 fileFolder = './Catalogus_Tabellen/'
 outputFolder = './output/'
@@ -37,10 +38,10 @@ df.rename(columns={'subsection_id': 'id'}, inplace=True)
 df.to_csv(outputFolder + 'lifelines_sub_section.tsv',
           columns=['id', 'name'], sep='\t', index=False)
 
-print('variant.txt                  -> lifelines_variants.tsv...')
+print('variant.txt                  -> lifelines_variant.tsv...')
 df = pd.read_csv(fileFolder + 'variant.txt', sep='\t', engine='python')
 df.rename(columns={'variant_id': 'id'}, inplace=True)
-df.to_csv(outputFolder + 'lifelines_variants.tsv',
+df.to_csv(outputFolder + 'lifelines_variant.tsv',
           columns=['id', 'name', 'assessment_id'], sep='\t', index=False, float_format='%.f')
 
 print('variable.txt + what_when.txt -> lifelines_variable.tsv...')
@@ -52,7 +53,7 @@ what_when = pd.read_csv(fileFolder + 'what_when.txt',
                         sep='\t', engine='python')
 what_when.rename(columns={'variable_id': 'id'}, inplace=True)
 grouped = what_when.groupby('id').agg(
-    variants=('variant_id', lambda col: ','.join(col.map(str)))).reset_index()
+    variants=('variant_id', lambda ids: ','.join(np.unique(ids.map(str))))).reset_index()
 
 variable = pd.merge(variable, grouped, on='id')
 variable.to_csv(outputFolder + 'lifelines_variable.tsv', columns=[
