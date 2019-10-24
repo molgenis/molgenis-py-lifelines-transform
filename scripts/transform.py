@@ -91,5 +91,10 @@ who.to_csv(outputFolder + 'lifelines_who.tsv', columns=['ll_nr', 'gender_group',
 print('who_when.txt                 -> lifelines_who_when.tsv')
 who_when = pd.read_csv(fileFolder + 'who_when.txt',
                        sep='\t', engine='python', converters={'ll_nr': str})
-who_when.to_csv(outputFolder + 'lifelines_who_when.tsv',
-                sep='\t', index_label='id')
+# TODO: remove this workaround.
+# Join with the who table to filter out the ll_nrs present in who_when but missing in who
+who['missing'] = who['ll_nr']
+merged = pd.merge(
+    left=who_when, right=who[['ll_nr', 'missing']], on='ll_nr', how='left')
+merged.dropna(subset=['missing']).to_csv(outputFolder + 'lifelines_who_when.tsv', sep='\t', index_label='id',
+                                         columns=['ll_nr', 'variant_id'])
