@@ -61,26 +61,22 @@ variable.to_csv(outputFolder + 'lifelines_variable.tsv', columns=[
 
 print('variable.txt                 -> lifelines_tree.tsv')
 variable = pd.read_csv(fileFolder + 'variable.txt', sep='\t', engine='python')
-grouped = variable.groupby(
-    ['section_id', 'subsection_id']).count().reset_index()
-altgrouped = variable.dropna(subset=['alt_section_id', 'alt_subsection_id']).astype(
-    {'alt_section_id': 'int32', 'alt_subsection_id': 'int32'}).groupby(['alt_section_id', 'alt_subsection_id']).count().reset_index()
-altgrouped.rename({'alt_section_id': 'section_id',
-                   'alt_subsection_id': 'subsection_id'}, inplace=True)
-tree = pd.concat(objs=[grouped, altgrouped], sort=True).groupby(
-    ['section_id', 'subsection_id']).size().reset_index()
+subsections = variable[['section_id', 'subsection_id']]
+alt_subsections = variable[['alt_section_id', 'alt_subsection_id']].dropna().astype(
+    {'alt_section_id': 'int32', 'alt_subsection_id': 'int32'}).rename(columns={'alt_section_id': 'section_id',
+                                                                               'alt_subsection_id': 'subsection_id'})
+tree = pd.concat(objs=[subsections, alt_subsections], sort=False).sort_values(
+    by=['section_id', 'subsection_id']).drop_duplicates().reset_index()
 tree.to_csv(outputFolder + 'lifelines_tree.tsv',
             columns=['section_id', 'subsection_id'], sep='\t', index_label='id')
 
 print('variable.txt                 -> lifelines_subsection_variable.tsv')
 variable = pd.read_csv(fileFolder + 'variable.txt', sep='\t', engine='python')
-grouped = variable.groupby(
-    ['variable_id', 'subsection_id']).count().reset_index()
-altgrouped = variable.dropna(subset=['alt_subsection_id']).astype(
-    {'alt_subsection_id': 'int32'}).groupby(['variable_id', 'alt_subsection_id']).count().reset_index()
-altgrouped.rename({'alt_subsection_id': 'subsection_id'}, inplace=True)
-subsection_variable = pd.concat(objs=[grouped, altgrouped], sort=True).groupby(
-    ['subsection_id', 'variable_id']).size().reset_index()
+subvars = variable[['subsection_id', 'variable_id']]
+alt_subvars = variable[['alt_subsection_id', 'variable_id']].dropna().astype(
+    {'alt_subsection_id': 'int32'}).rename(columns={'alt_subsection_id': 'subsection_id'})
+subsection_variable = pd.concat(objs=[subvars, alt_subvars], sort=False).sort_values(
+    by=['subsection_id', 'variable_id']).drop_duplicates().reset_index()
 subsection_variable.to_csv(outputFolder + 'lifelines_subsection_variable.tsv',
                            columns=['subsection_id', 'variable_id'], sep='\t', index_label='id')
 
