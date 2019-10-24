@@ -55,7 +55,7 @@ what_when.rename(columns={'variable_id': 'id'}, inplace=True)
 grouped = what_when.groupby('id').agg(
     variants=('variant_id', lambda ids: ','.join(np.unique(ids.map(str))))).reset_index()
 
-variable = pd.merge(variable, grouped, on='id')
+variable = pd.merge(variable, grouped, on='id', how='left')
 variable.to_csv(outputFolder + 'lifelines_variable.tsv', columns=[
                 'id', 'name', 'label', 'variants'], sep='\t', index=False, float_format='%.f')
 
