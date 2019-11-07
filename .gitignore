@@ -4,3 +4,4 @@ output/
 .vscode/
 .eggs/
 LifelinesTransform.egg-info/
+.idea

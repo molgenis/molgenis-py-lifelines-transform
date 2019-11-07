@@ -26,8 +26,9 @@ python scripts/transform.py
 ```
 
 # Upload
-To upload the data, zip the contents of the output directory.
-Create a lifelines group if you haven't already and import the zipfile.
+To upload the data, zip the contents of the output directory. Run the deployment steps of the 
+[molgenis-app-lifelines-weshop](https://github.com/molgenis/molgenis-app-lifelines-webshop) until 
+you get the message to upload your data. Then upload the zip in the output directory of this repository.
 
 # Download
 To download data+metadata from dev server:
