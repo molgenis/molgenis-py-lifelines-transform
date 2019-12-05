@@ -1,0 +1,12 @@
+{
+    "version": "9",
+    "hosts": {
+        "s3": {
+            "url": "s3.eu-central-1.amazonaws.com",
+            "accessKey": "",
+            "secretKey": "",
+            "api": "S3v4",
+            "lookup": "dns"
+        }
+    }
+}

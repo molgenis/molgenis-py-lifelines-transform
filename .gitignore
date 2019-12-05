@@ -5,3 +5,6 @@ output/
 .eggs/
 LifelinesTransform.egg-info/
 .idea
+config.json
+output_ok
+dist
