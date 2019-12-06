@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import sys
 
-from io import StringIO
 from os import path
 from minio import Minio
 from minio.error import ResponseError
@@ -16,25 +15,25 @@ log = logging.getLogger(__name__)
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
 
-# minioClient = Minio(
-#     config['hostname'],
-#     access_key=config['accessKey'],
-#     secret_key=config['secretKey'],
-#     secure=False
-# )
+minioClient = Minio(
+    config['hostname'],
+    access_key=config['accessKey'],
+    secret_key=config['secretKey'],
+    secure=False
+)
 
-# try:
-#     s3_folder = list(minioClient.list_objects(config['bucket']))[-1].object_name
-#     files = minioClient.list_objects(config['bucket'], prefix=s3_folder, recursive=True)
-#     for file in files:
-#         minioClient.fget_object(config['bucket'], file.object_name, './%s/%s' % (config['src_dir'], file.object_name))
-#         log.info('saving %s' % file.object_name)
+try:
+    s3_folder = list(minioClient.list_objects(config['bucket']))[-1].object_name
+    files = minioClient.list_objects(config['bucket'], prefix=s3_folder, recursive=True)
+    for file in files:
+        minioClient.fget_object(config['bucket'], file.object_name, './%s/%s' % (config['src_dir'], file.object_name))
+        log.info('saving %s' % file.object_name)
 
-# except ResponseError as err:
-#     log.error(err)
-#     exit(1)
+except ResponseError as err:
+    log.error(err)
+    exit(1)
 
-s3_folder = '20191120_10.38.13_catalogueWww/'
+# s3_folder = '20191120_10.38.13_catalogueWww/'
 
 config['src_dir'] = path.join(config['src_dir'], s3_folder)
 
@@ -79,63 +78,56 @@ df.to_csv(
     columns=['id', 'name', 'assessment_id'], sep='\t', index=False, float_format='%.f'
 )
 
-# FIXME: � variables.csv is corrupt in oh-so-many-ways �
-# log.info('variable.csv + whatwhen.csv -> lifelines_variable.tsv...')
-# variable_file = path.join(config['src_dir'], 'variable.csv')
+log.info('variable.csv + whatwhen.csv -> lifelines_variable.tsv...')
+variable = pd.read_csv(path.join(config['src_dir'], 'variable.csv'), engine='python')
+variable.rename(
+    columns={
+        'VARIABLE_ID': 'id',
+        'VARIABLE_NAME': 'name',
+        'LABEL': 'label',
+        'DEFINITION_EN': 'definition_en',
+        'DEFINITION_NL': 'definition_nl',
+        'SUBVARIABLE_OF': 'subvariable_of'
+    }, inplace=True
+)
 
+what_when = pd.read_csv(path.join(config['src_dir'], 'whatwhen.csv'), engine='python')
+what_when.rename(columns={'VARIABLE_ID': 'id', 'VARIANT_ID': 'variant_id'}, inplace=True)
+grouped = what_when.groupby('id').agg(
+    variants=(
+        'variant_id', lambda ids: ','.join(np.unique(ids.map(str)))
+    )
+).reset_index()
 
-# with open(variable_file, 'r', encoding='utf-8') as f:
-#     variable_data = f.read().replace(',"', '').replace('",', '')
+variable = pd.merge(variable, grouped, on='id', how='left')
+variable.to_csv(
+    path.join(config['target_dir'], 'lifelines_variable.tsv'),
+    columns=['id', 'name', 'label', 'variants', 'definition_en', 'definition_nl', 'subvariable_of'],
+    sep='\t', index=False, float_format='%.f'
+)
 
-# variable = pd.read_csv(StringIO(variable_data), engine='python', encoding='utf-8')
-# variable.rename(
-#     columns={
-#         'VARIABLE_ID': 'id',
-#         'VARIABLE_NAME': 'name',
-#         'LABEL': 'label',
-#         'DEFINITION_EN': 'definition_en',
-#         'DEFINITION_NL': 'definition_nl',
-#         'SUBVARIABLE_OF': 'subvariable_of'
-#     }, inplace=True
-# )
+log.info('variable.csv                 -> lifelines_tree.tsv')
+variable = pd.read_csv(path.join(config['src_dir'], 'variable.csv'), engine='python')
+subsections = variable[['section_id', 'subsection_id']]
+alt_subsections = variable[['alt_section_id', 'alt_subsection_id']].dropna().astype(
+    {'alt_section_id': 'int32', 'alt_subsection_id': 'int32'}).rename(columns={'alt_section_id': 'section_id',
+                                                                               'alt_subsection_id': 'subsection_id'})
+tree = pd.concat(objs=[subsections, alt_subsections], sort=False).sort_values(
+    by=['section_id', 'subsection_id']).drop_duplicates().reset_index()
+tree.to_csv(
+    path.join(config['target_dir'], 'lifelines_tree.tsv'),
+    columns=['section_id', 'subsection_id'], sep='\t', index_label='id'
+)
 
-# what_when = pd.read_csv(path.join(config['src_dir'], 'whatwhen.csv'), engine='python')
-# what_when.rename(columns={'VARIABLE_ID': 'id', 'VARIANT_ID': 'variant_id'}, inplace=True)
-# grouped = what_when.groupby('id').agg(
-#     variants=(
-#         'variant_id', lambda ids: ','.join(np.unique(ids.map(str)))
-#     )
-# ).reset_index()
-
-# variable = pd.merge(variable, grouped, on='id', how='left')
-# variable.to_csv(
-#     path.join(config['target_dir'], 'lifelines_variable.tsv'),
-#     columns=['id', 'name', 'label', 'variants', 'definition_en', 'definition_nl', 'subvariable_of'],
-#     sep='\t', index=False, float_format='%.f'
-# )
-
-# log.info('variable.csv                 -> lifelines_tree.tsv')
-# variable = pd.read_csv(path.join(config['src_dir'], 'variable.csv'), sep='\t', engine='python')
-# subsections = variable[['section_id', 'subsection_id']]
-# alt_subsections = variable[['alt_section_id', 'alt_subsection_id']].dropna().astype(
-#     {'alt_section_id': 'int32', 'alt_subsection_id': 'int32'}).rename(columns={'alt_section_id': 'section_id',
-#                                                                                'alt_subsection_id': 'subsection_id'})
-# tree = pd.concat(objs=[subsections, alt_subsections], sort=False).sort_values(
-#     by=['section_id', 'subsection_id']).drop_duplicates().reset_index()
-# tree.to_csv(
-#     path.join(config['target_dir'], 'lifelines_tree.tsv'),
-#     columns=['section_id', 'subsection_id'], sep='\t', index_label='id'
-# )
-
-# log.info('variable.csv                 -> lifelines_subsection_variable.tsv')
-# variable = pd.read_csv(path.join(config['src_dir'], 'variable.csv'), engine='python')
-# subvars = variable[['subsection_id', 'variable_id']]
-# alt_subvars = variable[['alt_subsection_id', 'variable_id']].dropna().astype(
-#     {'alt_subsection_id': 'int32'}).rename(columns={'alt_subsection_id': 'subsection_id'})
-# subsection_variable = pd.concat(objs=[subvars, alt_subvars], sort=False).sort_values(
-#     by=['subsection_id', 'variable_id']).drop_duplicates().reset_index()
-# subsection_variable.to_csv(config['target_dir'] + 'lifelines_subsection_variable.tsv',
-#                            columns=['subsection_id', 'variable_id'], sep='\t', index_label='id')
+log.info('variable.csv                 -> lifelines_subsection_variable.tsv')
+variable = pd.read_csv(path.join(config['src_dir'], 'variable.csv'), engine='python')
+subvars = variable[['subsection_id', 'variable_id']]
+alt_subvars = variable[['alt_subsection_id', 'variable_id']].dropna().astype(
+    {'alt_subsection_id': 'int32'}).rename(columns={'alt_subsection_id': 'subsection_id'})
+subsection_variable = pd.concat(objs=[subvars, alt_subvars], sort=False).sort_values(
+    by=['subsection_id', 'variable_id']).drop_duplicates().reset_index()
+subsection_variable.to_csv(config['target_dir'] + 'lifelines_subsection_variable.tsv',
+                           columns=['subsection_id', 'variable_id'], sep='\t', index_label='id')
 
 log.info('who.csv                      -> lifelines_who.tsv')
 who = pd.read_csv(path.join(config['src_dir'], 'who.csv'), engine='python')
