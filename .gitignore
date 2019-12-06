@@ -8,3 +8,5 @@ LifelinesTransform.egg-info/
 config.json
 output_ok
 dist
+catalogue/
+generated/
