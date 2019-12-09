@@ -1,8 +1,10 @@
 {
-    "hostname": "localhost:9000",
-    "accessKey": "xxxx",
-    "secretKey": "xxxx",
+    "accessKey": "molgenis",
     "bucket": "molgenis",
-    "src_dir": "catalogue",
-    "target_dir": "generated"
+    "molgenis_hostname": "https://dev-lifelines.test.molgenis.org",
+    "s3_hostname": "localhost:9000",
+    "secretKey": "molgenis",
+    "secure": false,
+    "src_dir": "./catalogue",
+    "target_dir": "./generated"
 }
