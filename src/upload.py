@@ -16,4 +16,3 @@ def upload(config, target_dir):
     zipf = zipfile.ZipFile('lifelines.zip', 'w', zipfile.ZIP_DEFLATED)
     zipdir(target_dir, zipf)
     zipf.close()
-
