@@ -11,6 +11,7 @@ class Transform:
     def __init__(self, config, s3_folder):
         self.config = config
         self.s3_folder = s3_folder
+        self.config['src_dir'] = path.join(self.config['src_dir'], self.s3_folder)
 
     def transform_data(self):
         log.info('transforming data from s3 folder: %s' % self.s3_folder)
@@ -24,6 +25,7 @@ class Transform:
         self.transform_tree(sections, subsections)
         self.transform_subsection_variable(subsections)
 
+        self.transform_variable_enum()
         self.transform_variant()
         self.transform_variable_whatwhen()
 
@@ -31,7 +33,7 @@ class Transform:
         self.transform_whowhen(who)
 
     def transform_agegroup(self):
-        self.config['src_dir'] = path.join(self.config['src_dir'], self.s3_folder)
+
         log.info('{:<30} -> {}'.format('agegroup.csv', 'age_group.tsv'))
         age_group = pd.read_csv(path.join(self.config['src_dir'], 'agegroup.csv'), engine='python')
         age_group.rename(columns={'AGEGROUP_ID': 'id', 'LABEL': 'name'}, inplace=True)
@@ -84,6 +86,17 @@ class Transform:
         )
 
         return subsections
+
+    def transform_variable_enum(self):
+        log.info('{:<30} -> {}'.format('variable-enumeration.csv', 'variable_enum.tsv'))
+        age_group = pd.read_csv(path.join(self.config['src_dir'], 'variable-enumeration.csv'), engine='python')
+        age_group.rename(columns={
+            'VARIABLE_ID': 'variable',
+            'ENUMERATION_CODE': 'code',
+            'ENUMERATION_NL': 'label-nl',
+            'ENUMERATION_EN': 'label-en'
+        }, inplace=True)
+        age_group.to_csv(path.join(self.config['target_dir'], 'variable_enum.tsv'), sep='\t', index=False)
 
     def transform_variant(self):
         log.info('{:<30} -> {}'.format('variant.csv', 'variant.tsv'))

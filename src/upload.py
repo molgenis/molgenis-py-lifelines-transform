@@ -73,3 +73,26 @@ def upload(config):
 
     log.info('import completed with status: %s' % (batch_status))
     log.debug('batch response:\n%s' % json.dumps(res))
+
+def set_permissions(config):
+    entitytype_permissions = {
+        'objects': [
+            {'objectId': 'lifelines_who', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'COUNT'}]},
+            {'objectId': 'lifelines_who_when', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'COUNT'}]},
+
+            {'objectId': 'sys_L10nString', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_variable', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_section', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_assessment', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_age_group', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_sub_section', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_tree', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_variant', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_subsection_variable', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+        ]
+    }
+
+    json_headers = {'Content-Type': 'application/json', 'x-molgenis-token': config['molgenis']['token']}
+    grant_endpoint = '%s/api/permissions/entityType' % config['molgenis']['hostname']
+    res = requests.post(grant_endpoint, headers=json_headers, data=json.dumps(entitytype_permissions))
+    res.raise_for_status()
