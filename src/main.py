@@ -17,7 +17,7 @@ with open(path.join(project_dir, 'config.json'), 'r') as config_file:
 
 config['project_dir'] = project_dir
 
-# s3_folder = download.download_bucket(config, target_dir)
+s3_folder = download.download_bucket(config)
 s3_folder = '20191206_09.42.42_catalogueWww/'
 transform = Transform(config, s3_folder)
 transform.transform_data()

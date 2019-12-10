@@ -1,10 +1,15 @@
 {
-    "accessKey": "molgenis",
-    "bucket": "molgenis",
-    "molgenis_hostname": "https://dev-lifelines.test.molgenis.org",
-    "s3_hostname": "localhost:9000",
-    "secretKey": "molgenis",
-    "secure": false,
+    "s3": {
+        "accessKey": "molgenis",
+        "bucket": "molgenis",
+        "hostname": "localhost:9000",
+        "secretKey": "",
+        "secure": false
+    },
+    "molgenis": {
+        "hostname": "http://localhost:8080",
+        "token": ""
+    },
     "src_dir": "./catalogue",
     "target_dir": "./generated"
 }

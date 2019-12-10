@@ -12,7 +12,8 @@ class Transform:
         self.config = config
         self.s3_folder = s3_folder
 
-    def transform_data(self):       
+    def transform_data(self):
+        log.info('transforming data from s3 folder: %s' % self.s3_folder)
         self.transform_agegroup()
         self.transform_gendergroup()
         self.transform_assessment()
