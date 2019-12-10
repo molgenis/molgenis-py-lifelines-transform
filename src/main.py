@@ -15,10 +15,11 @@ project_dir = path.abspath(path.join(path.dirname(path.abspath(__file__)), '../'
 with open(path.join(project_dir, 'config.json'), 'r') as config_file:
     config = json.load(config_file)
 
-target_dir = path.join(project_dir, config['target_dir'])
+config['project_dir'] = project_dir
+
 # s3_folder = download.download_bucket(config, target_dir)
 s3_folder = '20191206_09.42.42_catalogueWww/'
 transform = Transform(config, s3_folder)
 transform.transform_data()
 
-upload.upload(config, target_dir)
+upload.upload(config)
