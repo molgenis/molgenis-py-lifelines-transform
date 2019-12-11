@@ -11,19 +11,18 @@ log = logging.getLogger(__name__)
 
 def upload(config):
     log.info('zipping transformed data')
-    target_dir = os.path.join(config['project_dir'], config['target_dir'])
     attributes_src = os.path.join(config['project_dir'], 'meta', 'attributes.tsv')
-    attributes_target = os.path.join(target_dir, 'attributes.tsv')
+    attributes_target = os.path.join(config['target_dir'], 'attributes.tsv')
     copyfile(attributes_src, attributes_target)
 
     zip_src = os.path.join(os.path.join(config['project_dir'], 'lifelines.zip'))
 
     zipf = zipfile.ZipFile(zip_src, 'w', zipfile.ZIP_DEFLATED)
 
-    for filename in os.listdir(target_dir):
+    for filename in os.listdir(config['target_dir']):
         (_, ext) = os.path.splitext(filename)
         if ext == '.tsv':
-            zipf.write(os.path.join(target_dir, filename), filename)
+            zipf.write(os.path.join(config['target_dir'], filename), filename)
 
     zipf.close()
 

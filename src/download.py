@@ -21,9 +21,9 @@ def download_bucket(config):
         s3_folder = list(minioClient.list_objects(config['s3']['bucket']))[-1].object_name
         files = minioClient.list_objects(config['s3']['bucket'], prefix=s3_folder, recursive=True)
         for file in files:
-            target_file = path.join(config['project_dir'], config['target_dir'], file.object_name)
+            target_file = path.join(config['src_dir'], file.object_name)
+            log.info('saving %s => %s' % (file.object_name, target_file))
             minioClient.fget_object(config['s3']['bucket'], file.object_name, target_file)
-            log.info('saving %s' % file.object_name)
 
     except ResponseError as err:
         log.error(err)

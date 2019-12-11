@@ -24,7 +24,7 @@ description = ""
 authors = ["Fleur Kelpin"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 numpy = "^1.17"
 pandas = "^0.25.3"
 minio = "^5.0"

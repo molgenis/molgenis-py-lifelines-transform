@@ -1,33 +1,40 @@
-import json
 import logging
+import json
 import sys
+import os
+
 import download
-import upload
-
 from transform import Transform
-
-from os import path
+import upload
 
 log = logging.getLogger(__name__)
 
 FORMAT = '[%(levelname)s] %(asctime)-15s %(message)s'
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=FORMAT)
 
-project_dir = path.abspath(path.join(path.dirname(path.abspath(__file__)), '../'))
+project_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../'))
 
 config_locations = [
-    path.join(project_dir, 'config.json'),
-    path.join(project_dir, '.config', 'config.json'),
+    os.path.join(project_dir, 'config.json'),
+    os.path.join(project_dir, '.config', 'config.json'),
 ]
 
 for config_location in config_locations:
-    if path.isfile(config_location):
+    if os.path.isfile(config_location):
         log.info('config found: %s' % config_location)
         with open(config_location, 'r') as config_file:
             config = json.load(config_file)
         break
 
 config['project_dir'] = project_dir
+config['src_dir'] = os.path.join(project_dir, config['src_dir'])
+config['target_dir'] = os.path.join(project_dir, config['target_dir'])
+
+if not os.path.exists(config['src_dir']):
+    os.makedirs(config['src_dir'])
+
+if not os.path.exists(config['target_dir']):
+    os.makedirs(config['target_dir'])
 
 s3_folder = download.download_bucket(config)
 

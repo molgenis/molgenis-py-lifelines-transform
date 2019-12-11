@@ -11,6 +11,6 @@
         "hostname": "http://localhost:8080",
         "token": ""
     },
-    "src_dir": "./catalog",
-    "target_dir": "./generated"
+    "src_dir": "catalog",
+    "target_dir": "generated"
 }

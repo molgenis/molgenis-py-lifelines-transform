@@ -5,10 +5,15 @@ RUN echo Server = http://ftp.nluug.nl/os/Linux/distr/archlinux/\$repo/os/\$arch 
 RUN pacman -Syu --noconfirm
 RUN pacman -S git openssh python-pip --noconfirm
 
-COPY . /root/lifelines-transform
+
 WORKDIR /root/lifelines-transform
+
+COPY ./poetry.lock /root/lifelines-transform
+COPY ./pyproject.toml /root/lifelines-transform
 
 RUN pip install poetry &&\
  poetry install -n --no-dev
+
+COPY . /root/lifelines-transform
 
 CMD [ "poetry", "run", "python", "src/main.py"]
