@@ -20,8 +20,8 @@ pipeline {
                 }
                 container('python') {
                     script {
-                        sh "pip install bumpversion"
-                        sh "pip install twine"
+                        sh "pip install poetry"
+                        sh "poetry install -n"
                     }
                 }
             }

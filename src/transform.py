@@ -148,16 +148,18 @@ class Transform:
 
         alt_section_tree = pd.merge(variable, sections, left_on='ALT_SECTION_NAME', right_on='name', how='left')\
             .rename(columns={'id': 'section_id'})
-        alt_section_tree = pd.merge(alt_section_tree, subsections, left_on='ALT_SUBSECTION_NAME', right_on='name', how='left')\
+        alt_section_tree = pd.merge(
+            alt_section_tree, subsections, left_on='ALT_SUBSECTION_NAME', right_on='name', how='left')\
             .rename(columns={'id': 'subsection_id'})
 
         tree = pd.concat(objs=[
             section_tree[['section_id', 'subsection_id']],
             alt_section_tree[['section_id', 'subsection_id']],
-            ], sort=False).dropna().astype({
-                'section_id': 'int32',
-                'subsection_id': 'int32',
-            }).sort_values(by=['section_id', 'subsection_id']).drop_duplicates().reset_index()
+        ], sort=False).dropna().astype({
+            'section_id': 'int32',
+            'subsection_id': 'int32',
+        }).sort_values(by=['section_id', 'subsection_id']).drop_duplicates().reset_index()
+
         tree.to_csv(
             path.join(self.config['target_dir'], 'tree.tsv'),
             columns=['section_id', 'subsection_id'], sep='\t', index_label='id'
