@@ -3,6 +3,7 @@
         "accessKey": "molgenis",
         "bucket": "molgenis",
         "hostname": "localhost:9000",
+        "region": "eu-west-1",
         "secretKey": "",
         "secure": false
     },

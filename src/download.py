@@ -13,7 +13,8 @@ def download_bucket(config):
         config['s3']['hostname'],
         access_key=config['s3']['accessKey'],
         secret_key=config['s3']['secretKey'],
-        secure=False
+        secure=config['s3']['secure'],
+        region=config['s3']['region'],
     )
 
     try:
