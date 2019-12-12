@@ -19,12 +19,20 @@ config_locations = [
     os.path.join(project_dir, '.config', 'config.json'),
 ]
 
+config = None
+
 for config_location in config_locations:
     if os.path.isfile(config_location):
         log.info('config found: %s' % config_location)
         with open(config_location, 'r') as config_file:
             config = json.load(config_file)
         break
+
+if not config:
+    log.error('config.json not found in any of the valid config locations:')
+    for config_location in config_locations:
+        log.error('=> %s' % config_location)
+    exit(1)
 
 config['project_dir'] = project_dir
 config['src_dir'] = os.path.join(project_dir, config['src_dir'])

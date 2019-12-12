@@ -161,8 +161,8 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
 version = "1.25.7"
 
 [metadata]
-content-hash = "fe59320c25c795d923639747af9c21e910ba3495e3629ea66004b8549d29101d"
-python-versions = "^3.8"
+content-hash = "6b83956048e75c3c2894c0f26212a2264d7c49835ff8d54f2e3881ba75bbab63"
+python-versions = "^3.7"
 
 [metadata.hashes]
 certifi = ["017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3", "25b64c7da4cd7479594d035c08c2d809eb4aab3a26e5a990ea98cc450c320f1f"]

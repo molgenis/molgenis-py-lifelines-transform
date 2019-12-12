@@ -1,44 +1,50 @@
-# Transform LifeLines data
+# Transform LifeLines
+This `lifelines-transform` Python package automates the (re)import of Lifelines data into Molgenis,
+except for the *order* and *catolog_users* tables. It performs the following tasks:
+* Download latest Lifelines csv files from a s3 bucket
+* Transform csv files to the appropriate Molgenis tsv format
+* Zip the transformed data
+* Data is imported by uploading the zip file through the Molgenis REST API
+* Table permissions are updated through Molgenis REST api
 
-# Get source data
-Source data will come from some s3 service.
-Right now, get the download link and unzip the file.
-The password is in the vault.
-N.B. The variables csv has been updated by Trynke to add labels and fix names.
+A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workload/cronjob:dev-lifelines:lifelines-transform) is setup to run this script in a container every night.
 
-# Transform
-It's probably easiest to create a virtualenv to run python.
-```
-python3 -m virtualenv env
-```
-This installs python into the `env` subdir.
 
-```
-source env/bin/activate
-pip install .
-```
-This retrieves dependencies.
+## Usage
 
-Now to run the transformation:
-```
-mkdir output
-python scripts/transform.py
-```
+    # Show all running services/pods:
+    kubectl get pods --namespace dev-lifelines
 
-# Upload
-To upload the data, zip the contents of the output directory.
-Create a lifelines group if you haven't already and import the zipfile.
+    # Show all cronjobs:
+    kubectl get cronjobs --namespace dev-lifelines
 
-# Download
-To download data+metadata from dev server:
-```
- java -jar downloader-1.2.0.jar -o -f lifelines.zip -a admin -u https://backend-lifelines.test.molgenis.org/ -s 10000 lifelines_age_group lifelines_assessment lifelines_gender_group lifelines_section lifelines_sub_section lifelines_subsection_variable lifelines_tree lifelines_variable lifelines_variant lifelines_who_when lifelines_who
-```
+    # Create a manual job to trigger the lifelines-transform script:
+    kubectl create job manual-transform --from cronjob/lifelines-transform --namespace dev-lifelines
 
-# issues
-* age group indicators can all be null
-* variable label can be longer than 255 characters
-* what_when contains duplicates (but we dedupe them)
-* a couple of subsections (17 and up) are listed as sections in the tree
-* some of the who_when is not listed in the who
+    # Delete it afterwards
+    kubectl delete job manual-transform --namespace dev-lifelines
 
+    # Info about the manual-transform job
+    kubectl describe job manual-transform --namespace dev-lifelines
+
+    # Show the log from the manual cronjob pod:
+    kubectl logs manual-transform-bs7lx --namespace dev-lifelines
+
+    # Create a Kubernetes secret:
+    kubectl create secret generic transform-config --from-file=config.json --namespace dev-lifelines
+
+
+# Development
+Please note that the Lifelines s3 bucket only whitelists access from the Kubernetes cluster.
+One way to test the Python Minio client locally, is to spin up a Minio client(`minio/mc`) on the cluster, mirror Lifelines data to the Lifelines Minio service and port-forward the service to your local machine:
+
+    kubectl port-forward service/lifelines-minio 9000 --namespace lifelines --context devcluster
+
+A more verbose option with limited editing options(fine for debugging), is to create a new pod (i.e. `ubuntu:eoan`), install some basic tooling, generate a ssh-key, add it your github account and checkout/run the project from there. Installation should be straightfoward.
+
+You can manually create tagged Docker images and push them to the Nexus registry, and run it as pod on the cluster:
+
+    # Password is in the fault
+    docker login registry.molgenis.org
+    docker build . --tag registry.molgenis.org/molgenis/lifelines-transform:dev
+    docker push registry.molgenis.org/molgenis/lifelines-transform:dev

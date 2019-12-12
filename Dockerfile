@@ -1,10 +1,5 @@
 # vim:set ft=dockerfile:
-FROM archlinux
-
-RUN echo Server = http://ftp.nluug.nl/os/Linux/distr/archlinux/\$repo/os/\$arch > /etc/pacman.d/mirrorlist
-RUN pacman -Sy --noconfirm
-RUN pacman -S python-pip --noconfirm
-
+FROM python:3.8-slim-buster
 WORKDIR /root/lifelines-transform
 
 COPY ./poetry.lock /root/lifelines-transform
