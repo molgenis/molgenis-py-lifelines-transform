@@ -1,8 +1,10 @@
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.2.0"
+version = "0.3.0"
+bump_message = "chore(release): $current_version → $new_version [skip ci]"
 files = [
-    "pyproject.toml:version"
+    "pyproject.toml:version",
+    "lifelines_transform/__init__.py"
 ]
 style = [
     ["qmark", "fg:#ff9d00 bold"],
@@ -18,8 +20,8 @@ style = [
 ]
 
 [tool.poetry]
-name = "lifelines-transform"
-version = "0.2.0"
+name = "lifelines_transform"
+version = "0.3.0"
 description = ""
 authors = ["Fleur Kelpin"]
 
@@ -33,6 +35,10 @@ requests = "^2.22"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
+commitizen = "^1.10"
+
+[tool.poetry.scripts]
+version = "lifelines_transform:get_version"
 
 [build-system]
 requires = ["poetry>=0.12"]

@@ -43,7 +43,7 @@ pipeline {
                 }
             }
         }
-        stage('Build container serving the artifacts [ PR ]') {
+        stage('Build container running the job [ PR ]') {
             when {
                 changeRequest()
             }
@@ -59,14 +59,35 @@ pipeline {
                 }
             }
         }
-        stage('Build: [ master ]') {
+        stage('Release: [ master ]') {
             when {
-                branch 'master'
+                allOf {
+                    branch 'master'
+                    not {
+                        changelog '.*\\[skip ci\\]$'
+                    }
+                }
             }
             steps {
                 milestone 1
                 container('sonar') {
                     sh "sonar-scanner"
+                }
+            }
+        }
+        stage('Build container running the job [ master ]') {
+            when {
+                branch 'master'
+            }
+            environment {
+                TAG = "PR-${CHANGE_ID}-${BUILD_NUMBER}"
+                DOCKER_CONFIG="/root/.docker"
+            }
+            steps {
+                container (name: 'kaniko', shell: '/busybox/sh') {
+                    sh "#!/busybox/sh\nmkdir -p ${DOCKER_CONFIG}"
+                    sh "#!/busybox/sh\necho '{\"auths\": {\"registry.molgenis.org\": {\"auth\": \"${NEXUS_AUTH}\"}}}' > ${DOCKER_CONFIG}/config.json"
+                    sh "#!/busybox/sh\n/kaniko/executor --context ${WORKSPACE} --destination ${LOCAL_REPOSITORY}:${TAG}"
                 }
             }
         }
