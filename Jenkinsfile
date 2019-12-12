@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         REPOSITORY = 'molgenis/molgenis-py-lifelines-transform'
-        LOCAL_REPOSITORY = "${LOCAL_REGISTRY}/lifelines-transform"
+        LOCAL_REPOSITORY = "${LOCAL_REGISTRY}/molgenis/lifelines-transform"
     }
     stages {
         stage('Prepare') {
