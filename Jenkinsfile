@@ -4,6 +4,10 @@ pipeline {
             label 'python-stretch'
         }
     }
+    environment {
+        REPOSITORY = 'molgenis/molgenis-py-lifelines-transform'
+        LOCAL_REPOSITORY = "${LOCAL_REGISTRY}/molgenis/lifelines-transform"
+    }
     stages {
         stage('Prepare') {
             steps {
@@ -12,16 +16,19 @@ pipeline {
                 }
                 container('vault') {
                     script {
-                        env.PYPI_USERNAME = sh(script: 'vault read -field=username secret/ops/account/pypi', returnStdout: true)
-                        env.PYPI_PASSWORD = sh(script: 'vault read -field=password secret/ops/account/pypi', returnStdout: true)
                         env.GITHUB_TOKEN = sh(script: 'vault read -field=value secret/ops/token/github', returnStdout: true)
+                        env.NEXUS_AUTH = sh(script: 'vault read -field=base64 secret/ops/account/nexus', returnStdout: true)
                         env.SONAR_TOKEN = sh(script: 'vault read -field=value secret/ops/token/sonar', returnStdout: true)
                     }
                 }
+                sh "git remote set-url origin https://${GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
+                sh "git fetch --tags"
+
                 container('python') {
                     script {
-                        sh "pip install bumpversion"
-                        sh "pip install twine"
+                        sh "pip install poetry"
+                        sh "poetry install -n"
+                        sh "poetry run flake8"
                     }
                 }
             }
@@ -31,27 +38,61 @@ pipeline {
                 changeRequest()
             }
             steps {
-                container('python') {
-                    sh "python setup.py test"
-                    sh "pip install ."
-                }
                 container('sonar') {
                     sh "sonar-scanner -Dsonar.github.oauth=${env.GITHUB_TOKEN} -Dsonar.pullrequest.base=${CHANGE_TARGET} -Dsonar.pullrequest.branch=${BRANCH_NAME} -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=molgenis/molgenis-py-consensus"
                 }
             }
         }
-        stage('Build: [ master ]') {
+        stage('Build container running the job [ PR ]') {
             when {
-                branch 'master'
+                changeRequest()
+            }
+            environment {
+                TAG = "PR-${CHANGE_ID}-${BUILD_NUMBER}"
+                DOCKER_CONFIG="/root/.docker"
+            }
+            steps {
+                container (name: 'kaniko', shell: '/busybox/sh') {
+                    sh "#!/busybox/sh\nmkdir -p ${DOCKER_CONFIG}"
+                    sh "#!/busybox/sh\necho '{\"auths\": {\"registry.molgenis.org\": {\"auth\": \"${NEXUS_AUTH}\"}}}' > ${DOCKER_CONFIG}/config.json"
+                    sh "#!/busybox/sh\n/kaniko/executor --context ${WORKSPACE} --destination ${LOCAL_REPOSITORY}:${TAG}"
+                }
+            }
+        }
+        stage('Release: [ master ]') {
+            when {
+                allOf {
+                    branch 'master'
+                    not {
+                        changelog '.*\\[skip ci\\]$'
+                    }
+                }
             }
             steps {
                 milestone 1
-                container('python') {
-                    sh "python setup.py test"
-                    sh "pip install ."
-                }
                 container('sonar') {
                     sh "sonar-scanner"
+                }
+                container('python') {
+                    sh "poetry run cz bump --yes"
+                    script {
+                        env.TAG = sh(script: 'poetry run version', returnStdout: true)
+                    }
+                }
+            }
+        }
+        stage('Build container running the job [ master ]') {
+            when {
+                branch 'master'
+            }
+            environment {
+                DOCKER_CONFIG="/root/.docker"
+            }
+            steps {
+                container (name: 'kaniko', shell: '/busybox/sh') {
+                    sh "#!/busybox/sh\nmkdir -p ${DOCKER_CONFIG}"
+                    sh "#!/busybox/sh\necho '{\"auths\": {\"registry.molgenis.org\": {\"auth\": \"${NEXUS_AUTH}\"}}}' > ${DOCKER_CONFIG}/config.json"
+                    sh "#!/busybox/sh\n/kaniko/executor --context ${WORKSPACE} --destination ${LOCAL_REPOSITORY}:${TAG}"
                 }
             }
         }

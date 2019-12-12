@@ -1,7 +1,10 @@
-Catalogus_Tabellen/
 env/
 output/
 .vscode/
 .eggs/
 LifelinesTransform.egg-info/
 .idea
+config.json
+dist
+catalog/
+generated/

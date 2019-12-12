@@ -1,0 +1,45 @@
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.3.0"
+bump_message = "chore(release): $current_version → $new_version [skip ci]"
+files = [
+    "pyproject.toml:version",
+    "lifelines_transform/__init__.py"
+]
+style = [
+    ["qmark", "fg:#ff9d00 bold"],
+    ["question", "bold"],
+    ["answer", "fg:#ff9d00 bold"],
+    ["pointer", "fg:#ff9d00 bold"],
+    ["highlighted", "fg:#ff9d00 bold"],
+    ["selected", "fg:#cc5454"],
+    ["separator", "fg:#cc5454"],
+    ["instruction", ""],
+    ["text", ""],
+    ["disabled", "fg:#858585 italic"]
+]
+
+[tool.poetry]
+name = "lifelines_transform"
+version = "0.3.0"
+description = ""
+authors = ["Fleur Kelpin"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "^1.17"
+pandas = "^0.25.3"
+minio = "^5.0"
+polling = "^0.3.1"
+requests = "^2.22"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.7"
+commitizen = "^1.10"
+
+[tool.poetry.scripts]
+version = "lifelines_transform:get_version"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

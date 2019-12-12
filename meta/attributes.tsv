@@ -1,0 +1,48 @@
+name	label	description	entity	dataType	refEntity	nillable	unique	visible	idAttribute	labelAttribute	readOnly	aggregateable	lookupAttribute	enumOptions	partOfAttribute	rangeMax	rangeMin	mappedBy	expression	validationExpression	defaultValue	tags	auto	label-en	description-en	label-nl
+id	id		age_group	int		False	True	True	TRUE	False	True	False	True													
+name	name		age_group	string		False	False	True	FALSE	True	False	False	True													
+id	id		assessment	int		False	True	True	TRUE	False	True	False	True													
+name	name		assessment	string		False	False	True	FALSE	True	False	False	True													
+id	id		gender_group	int		False	True	True	TRUE	False	True	False	True													
+name	name		gender_group	string		False	False	True	FALSE	True	False	False	True													
+id	id		section	int		False	True	True	TRUE	True	True	False	True													
+name	name		section	string		True	False	True	FALSE	False	False	False	False													
+id	id		sub_section	int		False	True	True	TRUE	True	True	False	True													
+name	name		sub_section	string		True	False	True	FALSE	False	False	False	False													
+id	id		subsection_variable	int		False	True	True	TRUE	True	True	False	True													
+subsection_id	subsection_id		subsection_variable	xref	sub_section	False	False	True	FALSE	False	False	False	False													
+variable_id	variable_id		subsection_variable	xref	variable	False	False	True	FALSE	False	False	False	False													
+subsection_agg	subsection_agg		subsection_variable	string		True	False	True	FALSE	False	False	True	False						"{template: ""{{subsection_id.id}}""}"							
+id	id		tree	int		False	True	True	TRUE	True	True	False	True													
+section_id	section_id		tree	xref	section	True	False	True	FALSE	False	False	False	False													
+subsection_id	subsection_id		tree	xref	sub_section	True	False	True	FALSE	False	False	False	False													
+id	id		variable	int		False	True	True	TRUE	False	True	False	True													
+name	name		variable	string		False	False	True	FALSE	True	False	False	True													
+label	label		variable	text		True	False	True	FALSE	False	False	False	True													
+variants	variants	The variants that this variable is part of	variable	mref	variant	True	False	True	FALSE	False	False	False	False													
+definition-en	definition (EN)		variable	string		True	False	True	FALSE	False	False	False	False													
+definition-nl	definition (NL)		variable	string		True	False	True	FALSE	False	False	False	False													
+subvariable_of	subvariable of	The variable that this variable is a subvariable of	variable	xref	variable	True	False	True	FALSE	False	False	False	False													
+subvariables	subvariables	Variables that are a subvariable of this variable	variable	onetomany	variable	True	False	True	FALSE	False	False	False	False					subvariable_of								
+options	options	Enum options for the value of this variable	variable	onetomany	variable_enum	True	False	True	FALSE	False	False	False	False					variable								
+id	id		variable_enum	string		False	True	False	AUTO	False	True	False	False													
+variable	variable	Variable that this is an enum option of	variable_enum	xref	variable	False	False	True	FALSE	False	False	False	False													
+code	enumeration code	Code for this option	variable_enum	int		True	False	True	FALSE	False	False	False	False													
+label-en	label (EN)		variable_enum	string		True	False	True	FALSE	True	False	False	True													
+label-nl	label (NL)		variable_enum	string		True	False	True	FALSE	False	False	False	False													
+id	id		variant	int		False	True	True	TRUE	True	True	False	True													
+name	name		variant	string		True	False	True	FALSE	False	False	False	False													
+assessment_id	assessment_id		variant	int		True	False	True	FALSE	False	False	False	False													
+ll_nr	ll_nr		who	int		False	True	True	TRUE	True	True	False	True													
+gender_group	gender_group		who	int		False	False	True	FALSE	False	False	False	False													
+age_group_at_1a	age_group_at_1a		who	int		True	False	True	FALSE	False	False	False	False													
+age_group_at_2a	age_group_at_2a		who	int		True	False	True	FALSE	False	False	False	False													
+age_group_at_3a	age_group_at_3a		who	int		True	False	True	FALSE	False	False	False	False													
+year_of_birth	year_of_birth		who	int		False	False	True	FALSE	False	False	False	False													
+subcohortgwas_group	subcohortgwas_group		who	bool		False	False	True	FALSE	False	False	False	False													
+subcohortugli_group	subcohortugli_group		who	bool		False	False	True	FALSE	False	False	False	False													
+subcohortdeep_group	subcohortdeep_group		who	bool		False	False	True	FALSE	False	False	False	False													
+subcohortdag3_group	subcohortdag3_group		who	bool		False	False	True	FALSE	False	False	False	False													
+id	id		who_when	int		False	True	True	TRUE	True	True	False	True													
+ll_nr	ll_nr		who_when	xref	who	False	False	True	FALSE	False	False	False	False													
+variant_id	variant_id		who_when	xref	variant	False	False	True	FALSE	False	False	True	False													
