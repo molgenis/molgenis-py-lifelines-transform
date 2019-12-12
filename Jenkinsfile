@@ -73,6 +73,12 @@ pipeline {
                 container('sonar') {
                     sh "sonar-scanner"
                 }
+                container('python') {
+                    sh "poetry run cz bump --yes"
+                    script {
+                        env.TAG = sh(script: 'poetry run version', returnStdout: true)
+                    }
+                }
             }
         }
         stage('Build container running the job [ master ]') {
@@ -80,7 +86,6 @@ pipeline {
                 branch 'master'
             }
             environment {
-                TAG = "PR-${CHANGE_ID}-${BUILD_NUMBER}"
                 DOCKER_CONFIG="/root/.docker"
             }
             steps {

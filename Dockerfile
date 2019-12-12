@@ -10,4 +10,4 @@ RUN pip install poetry &&\
 
 COPY . /root/lifelines-transform
 
-CMD [ "poetry", "run", "python", "lifelines-transform/main.py"]
+CMD [ "poetry", "run", "python", "lifelines_transform/main.py"]
