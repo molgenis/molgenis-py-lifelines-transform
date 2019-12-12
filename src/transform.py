@@ -138,7 +138,10 @@ class Transform:
 
     def transform_tree(self, sections, subsections):
         log.info('{:<30} => {}'.format('variable.csv', 'tree.tsv'))
-        variable = pd.read_csv(path.join(self.s3data_dir, 'variable.csv'), engine='python')
+        variable = pd.read_csv(path.join(self.s3data_dir, 'variable.csv'), engine='python').astype({
+            'ALT_SECTION_NAME': 'object',
+            'ALT_SUBSECTION_NAME': 'object',
+        })
 
         section_tree = pd.merge(variable, sections, left_on='SECTION_NAME', right_on='name', how='left')\
             .rename(columns={'id': 'section_id'})
@@ -167,7 +170,11 @@ class Transform:
 
     def transform_subsection_variable(self, subsections):
         log.info('{:<30} => {}'.format('variable.csv', 'subsection_variable.tsv'))
-        variable = pd.read_csv(path.join(self.s3data_dir, 'variable.csv'), engine='python')
+
+        variable = pd.read_csv(path.join(self.s3data_dir, 'variable.csv'), engine='python').astype({
+            'ALT_SECTION_NAME': 'object',
+            'ALT_SUBSECTION_NAME': 'object',
+        })
 
         subvars = pd.merge(variable, subsections, left_on='SUBSECTION_NAME', right_on='name', how='left')\
             .rename(columns={'id': 'subsection_id', 'VARIABLE_ID': 'variable_id'})
