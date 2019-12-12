@@ -2,9 +2,8 @@
 FROM archlinux
 
 RUN echo Server = http://ftp.nluug.nl/os/Linux/distr/archlinux/\$repo/os/\$arch > /etc/pacman.d/mirrorlist
-RUN pacman -Syu --noconfirm
-RUN pacman -S git openssh python-pip --noconfirm
-
+RUN pacman -Sy --noconfirm
+RUN pacman -S python-pip --noconfirm
 
 WORKDIR /root/lifelines-transform
 
