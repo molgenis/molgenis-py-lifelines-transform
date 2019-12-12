@@ -18,7 +18,18 @@ def download_bucket(config):
     )
 
     try:
-        s3_folder = list(minioClient.list_objects(config['s3']['bucket']))[-1].object_name
+        catalog_versions = list(minioClient.list_objects(config['s3']['bucket']))
+        log.info('last available catalogue versions:')
+        for version in catalog_versions[-10:]:
+            log.info('=> %s' % version.object_name)
+
+        if (config['s3']['catalog_folder'] == 'latest'):
+            s3_folder = catalog_versions[-1].object_name
+        else:
+            s3_folder = config['s3']['catalog_folder']
+
+        log.info('using catalog folder: %s' % s3_folder)
+
         files = minioClient.list_objects(config['s3']['bucket'], prefix=s3_folder, recursive=True)
         for file in files:
             target_file = path.join(config['src_dir'], file.object_name)

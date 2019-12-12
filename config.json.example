@@ -2,6 +2,7 @@
     "s3": {
         "accessKey": "molgenis",
         "bucket": "molgenis",
+        "catalog_folder": "latest",
         "hostname": "localhost:9000",
         "region": "eu-west-1",
         "secretKey": "",
