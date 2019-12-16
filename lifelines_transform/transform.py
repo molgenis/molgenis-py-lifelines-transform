@@ -88,14 +88,14 @@ class Transform:
 
     def transform_variable_enum(self):
         log.info('{:<30} => {}'.format('variable-enumeration.csv', 'variable_enum.tsv'))
-        age_group = pd.read_csv(path.join(self.s3data_dir, 'variable-enumeration.csv'), engine='python')
-        age_group.rename(columns={
+        variable_enum = pd.read_csv(path.join(self.s3data_dir, 'variable-enumeration.csv'), engine='python', na_filter=False)
+        variable_enum.rename(columns={
             'VARIABLE_ID': 'variable',
             'ENUMERATION_CODE': 'code',
             'ENUMERATION_NL': 'label-nl',
             'ENUMERATION_EN': 'label-en'
         }, inplace=True)
-        age_group.to_csv(path.join(self.config['target_dir'], 'variable_enum.tsv'), sep='\t', index=False)
+        variable_enum.to_csv(path.join(self.config['target_dir'], 'variable_enum.tsv'), sep='\t', index=False)
 
     def transform_variant(self):
         log.info('{:<30} => {}'.format('variant.csv', 'variant.tsv'))
