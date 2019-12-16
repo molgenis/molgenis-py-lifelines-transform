@@ -88,7 +88,8 @@ class Transform:
 
     def transform_variable_enum(self):
         log.info('{:<30} => {}'.format('variable-enumeration.csv', 'variable_enum.tsv'))
-        variable_enum = pd.read_csv(path.join(self.s3data_dir, 'variable-enumeration.csv'), engine='python', na_filter=False)
+        variable_enum = pd.read_csv(path.join(self.s3data_dir, 'variable-enumeration.csv'),
+                                    engine='python', na_filter=False)
         variable_enum.rename(columns={
             'VARIABLE_ID': 'variable',
             'ENUMERATION_CODE': 'code',
