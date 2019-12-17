@@ -25,6 +25,7 @@ definition-nl	definition (NL)		variable	string		True	False	True	FALSE	False	Fals
 subvariable_of	subvariable of	The variable that this variable is a subvariable of	variable	xref	variable	True	False	True	FALSE	False	False	False	False													
 subvariables	subvariables	Variables that are a subvariable of this variable	variable	onetomany	variable	True	False	True	FALSE	False	False	False	False					subvariable_of								
 options	options	Enum options for the value of this variable	variable	onetomany	variable_enum	True	False	True	FALSE	False	False	False	False					variable								
+subsections	subsections	Subsections that this variable is part of	variable	string		True	False	True	FALSE	False	False	False	False													
 id	id		variable_enum	string		False	True	False	AUTO	False	True	False	False													
 variable	variable	Variable that this is an enum option of	variable_enum	xref	variable	False	False	True	FALSE	False	False	False	False													
 code	enumeration code	Code for this option	variable_enum	int		True	False	True	FALSE	False	False	False	False													
