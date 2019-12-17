@@ -35,12 +35,40 @@ A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workl
 
 
 # Development
-Please note that the Lifelines s3 bucket only whitelists access from the Kubernetes cluster.
-One way to test the Python Minio client locally, is to spin up a Minio client(`minio/mc`) on the cluster, mirror Lifelines data to the Lifelines Minio service and port-forward the service to your local machine:
+Please note that the Lifelines s3 bucket only whitelists access from the Kubernetes cluster
+and that the Molgenis upload only works without basic authentication in front. To test the
+whole transfrom flow, you can spin up a Minio client(`minio/mc`) on the cluster.
+Open a shell to the pod and fill in *accessKey* and *secretKey* from the Vault and mirror:
 
-    kubectl port-forward service/lifelines-minio 9000 --namespace lifelines --context devcluster
+    # vi ~/.mc/config.json
 
-A more verbose option with limited editing options(fine for debugging), is to create a new pod (i.e. `ubuntu:eoan`), install some basic tooling, generate a ssh-key, add it your github account and checkout/run the project from there. Installation should be straightfoward.
+    "version": "9",
+    "hosts": {
+        "molgenis": {
+            "url": "http://backend-lifelines-minio.backend-lifelines.svc:9000",
+            "accessKey": "molgenis",
+            "secretKey": "molgenis",
+            "api": "S3v4",
+            "lookup": "auto"
+        },
+        "s3": {
+            "url": "https://s3.eu-central-1.amazonaws.com",
+            "accessKey": "",
+            "secretKey": "",
+            "api": "S3v4",
+            "region": "eu-central-1",
+            "lookup": "dns"
+        }
+    }
+
+    mc mirror s3/ll-catalogue-a molgenis/fleur
+
+ mirror Lifelines data to the Lifelines Minio service and port-forward the service to your local machine. The same can be done with the Molgenis backend:
+
+    kubectl port-forward svc/dev-lifelines-molgenis 8080:8080 --namespace dev-lifelines
+    kubectl port-forward svc/backend-lifelines-minio 9000:9000 --namespace backend-lifelines
+
+To test the Lifelines S3 bucket download itself, last-minute debugging is to create a new pod (i.e. `ubuntu:eoan`), install some basic tooling, generate a ssh-key, add it your github account and checkout/run the project from there. Installation should be straightfoward.
 
 You can manually create tagged Docker images and push them to the Nexus registry, and run it as pod on the cluster:
 
