@@ -98,8 +98,8 @@ class Transform:
         variable_enum.rename(columns={
             'VARIABLE_ID': 'variable',
             'ENUMERATION_CODE': 'code',
-            'ENUMERATION_NL': 'label-nl',
-            'ENUMERATION_EN': 'label-en'
+            'ENUMERATION_NL': 'label_nl',
+            'ENUMERATION_EN': 'label_en'
         }, inplace=True)
         variable_enum.to_csv(path.join(self.config['target_dir'], 'variable_enum.tsv'), sep='\t', index=False)
 
@@ -129,8 +129,8 @@ class Transform:
                 'VARIABLE_ID': 'id',
                 'VARIABLE_NAME': 'name',
                 'LABEL': 'label',
-                'DEFINITION_EN': 'definition-en',
-                'DEFINITION_NL': 'definition-nl',
+                'DEFINITION_EN': 'definition_en',
+                'DEFINITION_NL': 'definition_nl',
                 'SUBVARIABLE_OF': 'subvariable_of'
             }, inplace=True
         )
@@ -147,8 +147,8 @@ class Transform:
         variable.to_csv(
             path.join(self.config['target_dir'], 'variable.tsv'),
             columns=[
-                'id', 'name', 'label', 'variants', 'definition-en',
-                'definition-nl', 'subvariable_of', 'subsections'
+                'id', 'name', 'label', 'variants', 'definition_en',
+                'definition_nl', 'subvariable_of', 'subsections'
             ],
             sep='\t', index=False, float_format='%.f'
         )
