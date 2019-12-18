@@ -12,6 +12,11 @@ class Transform:
         self.config = config
         self.s3data_dir = path.join(self.config['src_dir'], s3_folder)
 
+    def _subsection_list(self, x):
+        colnames = ['subsection_id', 'alt_subsection_id']
+        subsections = [str(int(x[colname])) for colname in colnames if not np.isnan(x[colname])]
+        return ','.join(subsections)
+
     def transform_data(self):
         log.info('transforming data:')
         self.transform_agegroup()
@@ -26,7 +31,7 @@ class Transform:
 
         self.transform_variable_enum()
         self.transform_variant()
-        self.transform_variable_whatwhen()
+        self.transform_variable_whatwhen(subsections)
 
         who = self.transform_who()
         self.transform_whowhen(who)
@@ -107,9 +112,18 @@ class Transform:
             columns=['id', 'name', 'assessment_id'], sep='\t', index=False, float_format='%.f'
         )
 
-    def transform_variable_whatwhen(self):
+    def transform_variable_whatwhen(self, subsections):
         log.info('{:<30} => {}'.format('variable.csv + whatwhen.csv', 'variable.tsv'))
         variable = pd.read_csv(path.join(self.s3data_dir, 'variable.csv'), engine='python')
+
+        variable = pd.merge(variable, subsections, left_on='SUBSECTION_NAME', right_on='name', how='left')\
+            .rename(columns={'id': 'subsection_id'})
+
+        variable = pd.merge(variable, subsections, left_on='ALT_SUBSECTION_NAME', right_on='name', how='left')\
+            .rename(columns={'id': 'alt_subsection_id'})
+
+        variable['subsections'] = variable.apply(self._subsection_list, axis=1)
+
         variable.rename(
             columns={
                 'VARIABLE_ID': 'id',
@@ -132,7 +146,10 @@ class Transform:
         variable = pd.merge(variable, grouped, on='id', how='left')
         variable.to_csv(
             path.join(self.config['target_dir'], 'variable.tsv'),
-            columns=['id', 'name', 'label', 'variants', 'definition-en', 'definition-nl', 'subvariable_of'],
+            columns=[
+                'id', 'name', 'label', 'variants', 'definition-en',
+                'definition-nl', 'subvariable_of', 'subsections'
+            ],
             sep='\t', index=False, float_format='%.f'
         )
         return variable
