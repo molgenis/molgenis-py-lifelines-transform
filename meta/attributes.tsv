@@ -20,8 +20,8 @@ id	id		variable	int		False	True	True	TRUE	False	True	False	True
 name	name		variable	string		False	False	True	FALSE	True	False	False	True													
 label	label		variable	text		True	False	True	FALSE	False	False	False	True													
 variants	variants	The variants that this variable is part of	variable	mref	variant	True	False	True	FALSE	False	False	False	False													
-definition-en	definition (EN)		variable	string		True	False	True	FALSE	False	False	False	False													
-definition-nl	definition (NL)		variable	string		True	False	True	FALSE	False	False	False	False													
+definition_en	definition (EN)		variable	string		True	False	True	FALSE	False	False	False	False													
+definition_nl	definition (NL)		variable	string		True	False	True	FALSE	False	False	False	False													
 subvariable_of	subvariable of	The variable that this variable is a subvariable of	variable	xref	variable	True	False	True	FALSE	False	False	False	False													
 subvariables	subvariables	Variables that are a subvariable of this variable	variable	onetomany	variable	True	False	True	FALSE	False	False	False	False					subvariable_of								
 options	options	Enum options for the value of this variable	variable	onetomany	variable_enum	True	False	True	FALSE	False	False	False	False					variable								
@@ -29,8 +29,8 @@ subsections	subsections	Subsections that this variable is part of	variable	strin
 id	id		variable_enum	string		False	True	False	AUTO	False	True	False	False													
 variable	variable	Variable that this is an enum option of	variable_enum	xref	variable	False	False	True	FALSE	False	False	False	False													
 code	enumeration code	Code for this option	variable_enum	int		True	False	True	FALSE	False	False	False	False													
-label-en	label (EN)		variable_enum	string		True	False	True	FALSE	True	False	False	True													
-label-nl	label (NL)		variable_enum	string		True	False	True	FALSE	False	False	False	False													
+label_en	label (EN)		variable_enum	string		True	False	True	FALSE	True	False	False	True													
+label_nl	label (NL)		variable_enum	string		True	False	True	FALSE	False	False	False	False													
 id	id		variant	int		False	True	True	TRUE	True	True	False	True													
 name	name		variant	string		True	False	True	FALSE	False	False	False	False													
 assessment_id	assessment_id		variant	int		True	False	True	FALSE	False	False	False	False													
