@@ -88,6 +88,7 @@ def set_permissions(config):
             {'objectId': 'lifelines_tree', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
             {'objectId': 'lifelines_variant', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
             {'objectId': 'lifelines_subsection_variable', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+            {'objectId': 'lifelines_variable_enum', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
         ]
     }
 
