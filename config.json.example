@@ -13,5 +13,10 @@
         "token": ""
     },
     "src_dir": "catalog",
-    "target_dir": "generated"
+    "target_dir": "generated",
+    "actions": {
+        "download": true,
+        "upload": true,
+        "transform": true
+    }
 }

@@ -44,6 +44,7 @@ def upload(config):
     log.info('deleting old data from molgenis host: %s', config['molgenis']['hostname'])
     json_headers = {'Content-Type': 'application/json', 'x-molgenis-token': config['molgenis']['token']}
     batch_del_endpoint = '%s/api/v2/sys_md_EntityType' % config['molgenis']['hostname']
+
     res = requests.delete(batch_del_endpoint, headers=json_headers, data=json.dumps({'entityIds': entities}))
     res.raise_for_status()
 
@@ -72,6 +73,16 @@ def upload(config):
 
     log.info('import completed with status: %s' % (batch_status))
     log.debug('batch response:\n%s' % json.dumps(res))
+
+    log.info('change indexing depth of subsection_variable to 2')
+    indexing_endpoint = '%s/api/v2/sys_md_EntityType/indexingDepth' % config['molgenis']['hostname']
+    indexing_payload = {
+        'entities': [
+            {"id": "lifelines_subsection_variable", "indexingDepth": 2}
+        ]
+    }
+    res = requests.put(indexing_endpoint, headers=json_headers, data=json.dumps(indexing_payload))
+    res.raise_for_status()
 
 def set_permissions(config):
     entitytype_permissions = {

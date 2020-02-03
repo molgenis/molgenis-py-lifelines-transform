@@ -7,6 +7,7 @@ from minio.error import ResponseError
 log = logging.getLogger(__name__)
 
 def download_bucket(config):
+    log.info('connecting to host: %s' % config['s3']['hostname'])
     log.info('downloading from s3 bucket: %s' % config['s3']['bucket'])
 
     minioClient = Minio(
@@ -19,10 +20,12 @@ def download_bucket(config):
 
     try:
         catalog_versions = list(minioClient.list_objects(config['s3']['bucket']))
+
         log.info('last available catalogue versions:')
         for version in catalog_versions[-10:]:
             log.info('=> %s' % version.object_name)
 
+        # (!) Assumes the object names are alphabetically ordered.
         if (config['s3']['catalog_folder'] == 'latest'):
             s3_folder = catalog_versions[-1].object_name
         else:
