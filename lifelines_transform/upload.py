@@ -10,7 +10,8 @@ import zipfile
 log = logging.getLogger(__name__)
 
 def upload(config):
-    log.info('zipping transformed data')
+    log.info('[upload] using molgenis host: %s', config['molgenis']['hostname'])
+    log.info('[upload] zip transformed data')
     attributes_src = os.path.join(config['project_dir'], 'meta', 'attributes.tsv')
     attributes_target = os.path.join(config['target_dir'], 'attributes.tsv')
     copyfile(attributes_src, attributes_target)
@@ -41,13 +42,14 @@ def upload(config):
         'lifelines_who_when'
     ]
 
-    log.info('deleting old data from molgenis host: %s', config['molgenis']['hostname'])
+    log.info('[upload] delete old dataset from molgenis')
     json_headers = {'Content-Type': 'application/json', 'x-molgenis-token': config['molgenis']['token']}
     batch_del_endpoint = '%s/api/v2/sys_md_EntityType' % config['molgenis']['hostname']
+
     res = requests.delete(batch_del_endpoint, headers=json_headers, data=json.dumps({'entityIds': entities}))
     res.raise_for_status()
 
-    log.info('importing new data to molgenis host: %s', config['molgenis']['hostname'])
+    log.info('[upload] send new dataset to molgenis')
     files = {'file': open(zip_src, 'rb')}
     multipart_headers = {'x-molgenis-token': config['molgenis']['token']}
     import_endpoint = '%s/plugin/importwizard/importFile?packageId=lifelines' % config['molgenis']['hostname']
@@ -56,7 +58,7 @@ def upload(config):
 
     batch_status_endpoint = '%s%s' % (config['molgenis']['hostname'], res.text)
 
-    log.debug('waiting for import to finish')
+    log.debug('[upload] importing...')
     polling.poll(lambda: requests.get(batch_status_endpoint, headers=json_headers).json()['status'] != 'RUNNING',
                  step=20,
                  timeout=3600)
@@ -70,8 +72,18 @@ def upload(config):
         log.error('failed to import: %s' % json.dumps(res))
         raise Exception('failed to import:\n%s' % json.dumps(res))
 
-    log.info('import completed with status: %s' % (batch_status))
+    log.info('[upload] import finished with status: %s' % (batch_status))
     log.debug('batch response:\n%s' % json.dumps(res))
+
+    log.info('[upload] modify indexing depth of subsection_variable to 2')
+    indexing_endpoint = '%s/api/v2/sys_md_EntityType/indexingDepth' % config['molgenis']['hostname']
+    indexing_payload = {
+        'entities': [
+            {"id": "lifelines_subsection_variable", "indexingDepth": 2}
+        ]
+    }
+    res = requests.put(indexing_endpoint, headers=json_headers, data=json.dumps(indexing_payload))
+    res.raise_for_status()
 
 def set_permissions(config):
     entitytype_permissions = {
