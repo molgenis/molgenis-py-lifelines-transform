@@ -1,22 +1,23 @@
 {
-    "s3": {
-        "accessKey": "molgenis",
-        "bucket": "molgenis",
-        "catalog_folder": "latest",
-        "hostname": "localhost:9000",
-        "region": "eu-west-1",
-        "secretKey": "",
-        "secure": false
+    "actions": {
+        "download": true,
+        "upload": true,
+        "transform": true
     },
+    "catalog_folder": "latest",
+    "debug_mode": false,
     "molgenis": {
         "hostname": "http://localhost:8080",
         "token": ""
     },
     "src_dir": "catalog",
-    "target_dir": "generated",
-    "actions": {
-        "download": true,
-        "upload": true,
-        "transform": true
-    }
+    "s3": {
+        "accessKey": "molgenis",
+        "bucket": "molgenis",
+        "hostname": "localhost:9000",
+        "region": "eu-west-1",
+        "secretKey": "",
+        "secure": false
+    },
+    "target_dir": "generated"
 }
