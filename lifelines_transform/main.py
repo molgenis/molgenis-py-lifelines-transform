@@ -23,7 +23,7 @@ config = None
 
 for config_location in config_locations:
     if os.path.isfile(config_location):
-        log.info('config found: %s' % config_location)
+        log.info('config file: %s' % config_location)
         with open(config_location, 'r') as config_file:
             config = json.load(config_file)
         break
@@ -44,10 +44,30 @@ if not os.path.exists(config['src_dir']):
 if not os.path.exists(config['target_dir']):
     os.makedirs(config['target_dir'])
 
-s3_folder = download.download_bucket(config)
+log.info('download from s3: %s' % ('yes' if config['actions']['download'] else 'no'))
+log.info('transform data: %s' % ('yes' if config['actions']['transform'] else 'no'))
+log.info('upload to molgenis: %s' % ('yes' if config['actions']['upload'] else 'no'))
 
-transform = Transform(config, s3_folder)
-transform.transform_data()
+if config['actions']['download']:
+    catalog_folder = download.download_bucket(config)
+else:
+    catalogs = sorted(os.listdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../', 'catalog')))
+    if config['catalog_folder'] == 'latest':
+        catalog_folder = catalogs[-1]
+    else:
+        catalog_folder = config['catalog_folder']
 
-upload.upload(config)
-upload.set_permissions(config)
+log.info('selected catalog folder: %s' % catalog_folder)
+
+if config['actions']['transform']:
+    transform = Transform(config, catalog_folder)
+    transform.transform_data()
+
+if config['actions']['upload']:
+    if config['debug_mode']:
+        # Data with errors is logged and skipped in debug mode.
+        # Do not allow potentialy broken data to be uploaded to Molgenis.
+        log.warn('upload is not allowed in debug mode')
+    else:
+        upload.upload(config)
+        upload.set_permissions(config)

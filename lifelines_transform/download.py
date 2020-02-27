@@ -7,7 +7,8 @@ from minio.error import ResponseError
 log = logging.getLogger(__name__)
 
 def download_bucket(config):
-    log.info('downloading from s3 bucket: %s' % config['s3']['bucket'])
+    log.info('[download] connect to host: %s' % config['s3']['hostname'])
+    log.info('[download] select s3 bucket: %s' % config['s3']['bucket'])
 
     minioClient = Minio(
         config['s3']['hostname'],
@@ -19,21 +20,23 @@ def download_bucket(config):
 
     try:
         catalog_versions = list(minioClient.list_objects(config['s3']['bucket']))
-        log.info('last available catalogue versions:')
-        for version in catalog_versions[-10:]:
-            log.info('=> %s' % version.object_name)
 
-        if (config['s3']['catalog_folder'] == 'latest'):
+        log.info('[download] latest catalogue versions:')
+        for version in catalog_versions[-5:]:
+            log.info(' - %s' % version.object_name)
+
+        # (!) Assumes the object names are alphabetically ordered.
+        if (config['catalog_folder'] == 'latest'):
             s3_folder = catalog_versions[-1].object_name
         else:
-            s3_folder = config['s3']['catalog_folder']
+            s3_folder = config['catalog_folder']
 
-        log.info('using catalog folder: %s' % s3_folder)
+        log.info('[download] target s3 catalogue: %s' % s3_folder)
 
         files = minioClient.list_objects(config['s3']['bucket'], prefix=s3_folder, recursive=True)
         for file in files:
             target_file = path.join(config['src_dir'], file.object_name)
-            log.info('saving %s => %s' % (file.object_name, target_file))
+            log.info(' - %s' % file.object_name)
             minioClient.fget_object(config['s3']['bucket'], file.object_name, target_file)
 
     except ResponseError as err:
