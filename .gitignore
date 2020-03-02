@@ -8,3 +8,6 @@ config.json
 dist
 catalog/
 generated/
+lifelines.zip
+lifelines_transform.egg-info/
+lifelines_transform/__pycache__/

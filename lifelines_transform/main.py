@@ -5,7 +5,7 @@ import os
 
 import download
 from transform import Transform
-import upload
+from upload import Upload
 
 log = logging.getLogger(__name__)
 
@@ -69,5 +69,9 @@ if config['actions']['upload']:
         # Do not allow potentialy broken data to be uploaded to Molgenis.
         log.warn('upload is not allowed in debug mode')
     else:
-        upload.upload(config)
-        upload.set_permissions(config)
+        upload = Upload(config)
+        upload.delete_molgenis_entities()
+        upload.zip_transformed_data()
+        upload.upload_transformed_data_zip()
+        upload.set_entities_permissions()
+        upload.set_entity_indexing_depth('lifelines_subsection_variable')
