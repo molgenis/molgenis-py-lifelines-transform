@@ -1,6 +1,8 @@
 # Transform LifeLines
+
 This `lifelines-transform` Python package automates the (re)import of Lifelines data into Molgenis,
 except for the *order* and *catolog_users* tables. It performs the following tasks:
+
 * Download latest Lifelines csv files from a s3 bucket
 * Transform csv files to the appropriate Molgenis tsv format
 * Zip the transformed data
@@ -8,7 +10,6 @@ except for the *order* and *catolog_users* tables. It performs the following tas
 * Table permissions are updated through Molgenis REST api
 
 A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workload/cronjob:dev-lifelines:lifelines-transform) is setup to run this script in a container every night.
-
 
 ## Usage
 
@@ -33,8 +34,8 @@ A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workl
     # Create a Kubernetes secret:
     kubectl create secret generic transform-config --from-file=config.json --namespace dev-lifelines
 
+## Development
 
-# Development
 Please note that the Lifelines s3 bucket only whitelists access from the Kubernetes cluster
 and that the Molgenis upload only works without basic authentication in front. To test the
 whole transfrom flow, you can spin up a Minio client(`minio/mc`) on the cluster.
