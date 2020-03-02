@@ -31,7 +31,6 @@ class Upload:
             'lifelines_who_when'
         ]
 
-
     def delete_molgenis_entities(self):
         log.info('[upload] delete old dataset from molgenis')
         batch_del_endpoint = '%s/api/v2/sys_md_EntityType' % self.config['molgenis']['hostname']
@@ -51,7 +50,9 @@ class Upload:
                 {'objectId': 'lifelines_gender_group', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
                 {'objectId': 'lifelines_section', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
                 {'objectId': 'lifelines_sub_section', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
-                {'objectId': 'lifelines_subsection_variable', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
+                {'objectId': 'lifelines_subsection_variable', 'permissions': [
+                    {'role': 'ANONYMOUS', 'permission': 'READ'}
+                ]},
                 {'objectId': 'lifelines_tree', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
                 {'objectId': 'lifelines_variable', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
                 {'objectId': 'lifelines_variable_enum', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
