@@ -35,6 +35,7 @@ class Transform:
 
         who = self.transform_who()
         self.transform_whowhen(who)
+        self.transform_whatwhen()
 
     def transform_agegroup(self):
         log.info(' - agegroup.tsv')
@@ -272,6 +273,31 @@ class Transform:
             index_label='ll_nr'
         )
         return who
+
+    def transform_whatwhen(self):
+        log.info(' - what_when.tsv')
+        whatwhen = pd.read_csv(
+            path.join(self.s3data_dir, 'whatwhen.csv'),
+            engine='python', error_bad_lines=not self.config['debug_mode']
+        )
+
+        variant = pd.read_csv(
+            path.join(self.s3data_dir, 'variant.csv'),
+            engine='python', error_bad_lines=not self.config['debug_mode']
+        )
+
+        whatwhen = pd.merge(whatwhen, variant, on='VARIANT_ID', how='inner')
+        whatwhen.rename(columns={
+            'ASSESSMENT_ID': 'assessment_id',
+            'VARIABLE_ID': 'variable_id',
+            'VARIANT_ID': 'variant_id'
+        }, inplace=True)
+        whatwhen.sort_values(by=['variable_id', 'variant_id', 'assessment_id']).drop_duplicates().reset_index()
+        whatwhen.to_csv(
+            path.join(self.config['target_dir'], 'what_when.tsv'),
+            sep='\t', index_label='id', columns=['variable_id', 'variant_id', 'assessment_id']
+        )
+        return whatwhen
 
     def transform_whowhen(self, who):
         log.info(' - who_when.tsv')

@@ -47,3 +47,7 @@ subcohortdag3_group	subcohortdag3_group		who	bool		False	False	True	FALSE	False	
 id	id		who_when	int		False	True	True	TRUE	True	True	False	True													
 ll_nr	ll_nr		who_when	xref	who	False	False	True	FALSE	False	False	False	False													
 variant_id	variant_id		who_when	xref	variant	False	False	True	FALSE	False	False	True	False													
+id	id		what_when	int		False	True	True	TRUE	False	True	False	True													
+variant_id	variant_id		what_when	xref	variant	False	False	True	FALSE	False	False	True	False													
+variable_id	variable_id		what_when	xref	variable	False	False	True	FALSE	False	False	False	False													
+assessment_id	assessment_id		what_when	int		True	False	True	FALSE	False	False	False	False													

@@ -28,7 +28,8 @@ class Upload:
             'lifelines_variable_enum',
             'lifelines_variant',
             'lifelines_who',
-            'lifelines_who_when'
+            'lifelines_who_when',
+            'lifelines_what_when'
         ]
 
     def delete_molgenis_entities(self):
@@ -59,6 +60,7 @@ class Upload:
                 {'objectId': 'lifelines_variant', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'READ'}]},
                 {'objectId': 'lifelines_who', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'COUNT'}]},
                 {'objectId': 'lifelines_who_when', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'COUNT'}]},
+                {'objectId': 'lifelines_what_when', 'permissions': [{'role': 'ANONYMOUS', 'permission': 'COUNT'}]},
             ]
         }
 
