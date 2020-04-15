@@ -75,7 +75,6 @@ pipeline {
                     sh "sonar-scanner"
                 }
                 container('python') {
-                    sh "poetry run cz bump --yes"
                     script {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
                     }
@@ -91,6 +90,8 @@ pipeline {
             }
             steps {
                 container('python') {
+                    sh "poetry run cz bump --yes"
+                    sh "git push --tags origin master"
                     script {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
                     }
