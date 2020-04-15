@@ -69,6 +69,9 @@ pipeline {
                     }
                 }
             }
+            environment {
+                DOCKER_CONFIG="/root/.docker"
+            }
             steps {
                 milestone 1
                 container('sonar') {
@@ -81,16 +84,7 @@ pipeline {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
                     }
                 }
-            }
-        }
-        stage('Build container running the job [ master ]') {
-            when {
-                branch 'master'
-            }
-            environment {
-                DOCKER_CONFIG="/root/.docker"
-            }
-            steps {
+
                 container (name: 'kaniko', shell: '/busybox/sh') {
                     sh "#!/busybox/sh\nmkdir -p ${DOCKER_CONFIG}"
                     sh "#!/busybox/sh\necho '{\"auths\": {\"https://index.docker.io/v1/\": {\"auth\": \"${DOCKERHUB_AUTH}\"}}}' > ${DOCKER_CONFIG}/config.json"
