@@ -76,7 +76,6 @@ pipeline {
                 }
                 container('python') {
                     sh "poetry run cz bump --yes"
-                    sh "git push --tags origin master"
                     script {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
                     }
