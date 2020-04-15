@@ -1,6 +1,7 @@
 # Transform LifeLines
 This `lifelines-transform` Python package automates the (re)import of Lifelines data into Molgenis,
 except for the *order* and *catolog_users* tables. It performs the following tasks:
+
 * Download latest Lifelines csv files from a s3 bucket
 * Transform csv files to the appropriate Molgenis tsv format
 * Zip the transformed data
