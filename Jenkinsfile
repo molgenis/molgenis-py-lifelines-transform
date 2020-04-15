@@ -63,9 +63,6 @@ pipeline {
         stage('Release: [ master ]') {
             when {
                 branch 'master'
-                not {
-                    changelog '.*\\[skip ci\\]$'
-                }
             }
             environment {
                 GIT_AUTHOR_EMAIL = 'molgenis+ci@gmail.com'
