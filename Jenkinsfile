@@ -62,30 +62,16 @@ pipeline {
         }
         stage('Release: [ master ]') {
             when {
-                allOf {
-                    branch 'master'
-                    not {
-                        changelog '.*\\[skip ci\\]$'
-                    }
-                }
-            }
-            steps {
-                milestone 1
-                container('sonar') {
-                    sh "sonar-scanner"
-                }
-                container('python') {
-                    script {
-                        env.TAG = sh(script: 'poetry run version', returnStdout: true)
-                    }
-                }
-            }
-        }
-        stage('Build container running the job [ master ]') {
-            when {
                 branch 'master'
+                not {
+                    changelog '.*\\[skip ci\\]$'
+                }
             }
             environment {
+                GIT_AUTHOR_EMAIL = 'molgenis+ci@gmail.com'
+                GIT_AUTHOR_NAME = 'molgenis-jenkins'
+                GIT_COMMITTER_EMAIL = 'molgenis+ci@gmail.com'
+                GIT_COMMITTER_NAME = 'molgenis-jenkins'
                 DOCKER_CONFIG="/root/.docker"
             }
             steps {
