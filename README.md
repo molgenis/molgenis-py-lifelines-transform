@@ -1,4 +1,5 @@
 # Transform LifeLines
+
 This `lifelines-transform` Python package automates the (re)import of Lifelines data into Molgenis,
 except for the *order* and *catolog_users* tables. It performs the following tasks:
 
@@ -9,7 +10,6 @@ except for the *order* and *catolog_users* tables. It performs the following tas
 * Table permissions are updated through Molgenis REST api
 
 A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workload/cronjob:dev-lifelines:lifelines-transform) is setup to run this script in a container every night.
-
 
 ## Usage
 
