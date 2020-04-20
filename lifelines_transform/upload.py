@@ -78,7 +78,7 @@ class Upload:
         res.raise_for_status()
 
     def upload_transformed_data_zip(self):
-        log.info('[upload] send zipped transform data to molgenis')
+        log.info('[upload] upload transform zip to molgenis')
         files = {'file': open(self.zip_src, 'rb')}
         multipart_headers = {'x-molgenis-token': self.config['molgenis']['token']}
         import_endpoint = '%s/plugin/importwizard/importFile?packageId=lifelines' % self.config['molgenis']['hostname']
@@ -87,7 +87,7 @@ class Upload:
 
         batch_status_endpoint = '%s%s' % (self.config['molgenis']['hostname'], res.text)
 
-        log.debug('[upload] importing...')
+        log.debug('[upload] importing data...')
         polling.poll(
             lambda: requests.get(batch_status_endpoint, headers=self.json_headers).json()['status'] != 'RUNNING',
             step=20,

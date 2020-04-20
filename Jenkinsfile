@@ -10,10 +10,14 @@ pipeline {
     }
     stages {
         stage('Prepare') {
-            steps {
-                script {
-                    env.GIT_COMMIT = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+            when {
+                allOf {
+                    not {
+                        changelog '.*\\[skip ci\\]$'
+                    }
                 }
+            }
+            steps {
                 container('vault') {
                     script {
                         env.GITHUB_TOKEN = sh(script: 'vault read -field=value secret/ops/token/github', returnStdout: true)
@@ -68,6 +72,13 @@ pipeline {
                     }
                 }
             }
+            environment {
+                GIT_AUTHOR_EMAIL = 'molgenis+ci@gmail.com'
+                GIT_AUTHOR_NAME = 'molgenis-jenkins'
+                GIT_COMMITTER_EMAIL = 'molgenis+ci@gmail.com'
+                GIT_COMMITTER_NAME = 'molgenis-jenkins'
+                DOCKER_CONFIG = '/root/.docker'
+            }
             steps {
                 milestone 1
                 container('sonar') {
@@ -75,25 +86,21 @@ pipeline {
                 }
                 container('python') {
                     sh "poetry run cz bump --yes"
-                    sh "git push --tags origin master"
                     script {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
                     }
                 }
-            }
-        }
-        stage('Build container running the job [ master ]') {
-            when {
-                branch 'master'
-            }
-            environment {
-                DOCKER_CONFIG="/root/.docker"
-            }
-            steps {
                 container (name: 'kaniko', shell: '/busybox/sh') {
                     sh "#!/busybox/sh\nmkdir -p ${DOCKER_CONFIG}"
                     sh "#!/busybox/sh\necho '{\"auths\": {\"registry.molgenis.org\": {\"auth\": \"${NEXUS_AUTH}\"}}}' > ${DOCKER_CONFIG}/config.json"
                     sh "#!/busybox/sh\n/kaniko/executor --context ${WORKSPACE} --destination ${LOCAL_REPOSITORY}:${TAG}"
+                }
+            }
+            post {
+                success {
+                    container('python') {
+                        sh "git push origin master --follow-tags"
+                    }
                 }
             }
         }
