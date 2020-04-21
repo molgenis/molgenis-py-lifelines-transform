@@ -1,18 +1,27 @@
+from datetime import datetime
 import logging
 import json
 import sys
 import os
 
+
 import download
 from transform import Transform
 from upload import Upload
 
-log = logging.getLogger(__name__)
-
-FORMAT = '[%(levelname)s] %(asctime)-15s %(message)s'
-logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=FORMAT)
-
 project_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../'))
+
+log = logging.getLogger('transform')
+FORMAT = '[%(levelname)s] %(asctime)-15s %(message)s'
+formatter = logging.Formatter(FORMAT)
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=FORMAT)
+log_filename = 'transform-%s.log' % datetime.today().strftime('%Y-%m-%d')
+
+handler = logging.FileHandler(os.path.join(project_dir, 'logs', log_filename))
+handler.setFormatter(formatter)
+
+log.addHandler(handler)
 
 config_locations = [
     os.path.join(project_dir, 'config.json'),

@@ -7,7 +7,7 @@ from shutil import copyfile
 
 import zipfile
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('transform')
 
 class Upload:
 

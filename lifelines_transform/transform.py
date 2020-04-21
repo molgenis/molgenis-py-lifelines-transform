@@ -4,7 +4,7 @@ import pandas as pd
 
 from os import path
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('transform')
 
 
 class Transform:

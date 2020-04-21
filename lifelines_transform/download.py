@@ -4,7 +4,7 @@ from os import path
 from minio import Minio
 from minio.error import ResponseError
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('transform')
 
 def download_bucket(config):
     log.info('[download] connecting to host: %s' % config['s3']['hostname'])
