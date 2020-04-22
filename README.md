@@ -37,8 +37,8 @@ There are 2 Kubernetes namespaces: **lifelines-test**, **lifelines-accept**
     # Create a Kubernetes secret:
     kubectl create secret generic transform-config --from-file=config.json --namespace lifelines-test
 
-A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workload/cronjob:lifelines-catalog-test:transform) is setup to run the transform in a container
-every night.
+A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workload/cronjob:lifelines-catalog-test:transform)
+is setup to run the transform in a container every night.
 
 #### Mirror to Minio server
 
