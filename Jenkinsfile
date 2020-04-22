@@ -5,6 +5,7 @@ pipeline {
         }
     }
     environment {
+        POETRY_CACHE_DIR = '/usr/src/app/.cache'
         REPOSITORY = 'molgenis/molgenis-py-lifelines-transform'
         LOCAL_REPOSITORY = "${LOCAL_REGISTRY}/molgenis/lifelines-transform"
     }
