@@ -28,14 +28,6 @@ pipeline {
                 }
                 sh "git remote set-url origin https://${GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
                 sh "git fetch --tags"
-
-                container('python') {
-                    script {
-                        sh "pip install poetry"
-                        sh "poetry install -n"
-                        sh "poetry run flake8"
-                    }
-                }
             }
         }
         stage('Build: [ pull request ]') {
