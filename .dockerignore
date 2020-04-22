@@ -1,6 +1,7 @@
 config.json
 lifelines.zip
 .config
+poetry.lock
 generated
 catalog
 dist
