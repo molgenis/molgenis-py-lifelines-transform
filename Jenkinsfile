@@ -78,6 +78,7 @@ pipeline {
                     sh "sonar-scanner"
                 }
                 container('python') {
+                    sh "pip install poetry"
                     sh "poetry run cz bump --yes"
                     script {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
