@@ -28,19 +28,17 @@ pipeline {
                 }
                 sh "git remote set-url origin https://${GITHUB_TOKEN}@github.com/${REPOSITORY}.git"
                 sh "git fetch --tags"
-            }
-        }
-        stage('Build: [ pull request ]') {
-            when {
-                changeRequest()
-            }
-            steps {
-                container('sonar') {
-                    sh "sonar-scanner -Dsonar.github.oauth=${env.GITHUB_TOKEN} -Dsonar.pullrequest.base=${CHANGE_TARGET} -Dsonar.pullrequest.branch=${BRANCH_NAME} -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=molgenis/molgenis-py-consensus"
+
+                container('python') {
+                    script {
+                        sh "pip install poetry"
+                        sh "poetry install -n"
+                        sh "poetry run flake8"
+                    }
                 }
             }
         }
-        stage('Build container running the job [ PR ]') {
+        stage('Build [pull request]') {
             when {
                 changeRequest()
             }
@@ -49,6 +47,9 @@ pipeline {
                 DOCKER_CONFIG="/root/.docker"
             }
             steps {
+                container('sonar') {
+                    sh "sonar-scanner -Dsonar.github.oauth=${env.GITHUB_TOKEN} -Dsonar.pullrequest.base=${CHANGE_TARGET} -Dsonar.pullrequest.branch=${BRANCH_NAME} -Dsonar.pullrequest.key=${env.CHANGE_ID} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=molgenis/molgenis-py-consensus"
+                }
                 container (name: 'kaniko', shell: '/busybox/sh') {
                     sh "#!/busybox/sh\nmkdir -p ${DOCKER_CONFIG}"
                     sh "#!/busybox/sh\necho '{\"auths\": {\"registry.molgenis.org\": {\"auth\": \"${NEXUS_AUTH}\"}}}' > ${DOCKER_CONFIG}/config.json"
@@ -56,7 +57,7 @@ pipeline {
                 }
             }
         }
-        stage('Release: [ master ]') {
+        stage('Release: [master]') {
             when {
                 allOf {
                     branch 'master'
@@ -78,7 +79,6 @@ pipeline {
                     sh "sonar-scanner"
                 }
                 container('python') {
-                    sh "pip install poetry"
                     sh "poetry run cz bump --yes"
                     script {
                         env.TAG = sh(script: 'poetry run version', returnStdout: true)
