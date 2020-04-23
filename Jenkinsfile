@@ -89,7 +89,7 @@ pipeline {
             post {
                 success {
                     container('python') {
-                        sh "git push origin master --follow-tags"
+                        sh "git push origin master --tags"
                     }
                     hubotSend(message: 'Build success', status:'INFO', site: 'slack-pr-app-team')
                 }

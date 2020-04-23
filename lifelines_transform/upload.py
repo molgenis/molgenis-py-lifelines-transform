@@ -4,7 +4,6 @@ import os
 import polling
 import requests
 from shutil import copyfile
-
 import zipfile
 
 log = logging.getLogger('transform')
