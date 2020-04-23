@@ -14,28 +14,28 @@ It performs the following tasks:
 
 ### Kubernetes
 
-There are 2 Kubernetes namespaces: **lifelines-test**, **lifelines-accept**
+There are 2 Kubernetes namespaces: **lifelines-catalog-test**, **lifelines-catalog-accept**
 
     # Show all running services/pods:
-    kubectl get pods --namespace lifelines-test
+    kubectl get pods --namespace lifelines-catalog-test
 
     # Show all cronjobs:
-    kubectl get cronjobs --namespace lifelines-test
+    kubectl get cronjobs --namespace lifelines-catalog-test
 
     # Create a manual job to trigger the lifelines-transform script:
-    kubectl create job manual-transform --from cronjob/lifelines-transform --namespace lifelines-test
+    kubectl create job manual-transform --from cronjob/transform --namespace lifelines-catalog-test
 
     # Delete it afterwards
-    kubectl delete job manual-transform --namespace lifelines-test
+    kubectl delete job manual-transform --namespace lifelines-catalog-test
 
     # Info about the manual-transform job
-    kubectl describe job manual-transform --namespace lifelines-test
+    kubectl describe job manual-transform --namespace lifelines-catalog-test
 
     # Show the log from the manual cronjob pod:
-    kubectl logs manual-transform-bs7lx --namespace lifelines-test
+    kubectl logs manual-transform-bs7lx --namespace lifelines-catalog-test
 
     # Create a Kubernetes secret:
-    kubectl create secret generic transform-config --from-file=config.json --namespace lifelines-test
+    kubectl create secret generic transform-config --from-file=config.json --namespace lifelines-catalog-test
 
 A [Kubernetes cronjob](https://rancher.molgenis.org:7777/p/c-rrz2w:p-dtpjq/workload/cronjob:lifelines-catalog-test:transform)
 is setup to run the transform in a container every night.
