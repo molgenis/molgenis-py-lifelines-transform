@@ -1,7 +1,7 @@
 # Transform LifeLines
 
-Lifelines transform automates the (re)import of Lifelines data into Molgenis,
-except for the *order* and *catolog_users* tables.
+The Lifelines transform runs periodically as a cronjob, importing Lifelines data
+into Molgenis, except for the *order* and *catolog_users* tables.
 It performs the following tasks:
 
 * Download latest Lifelines csv files from a s3 bucket
@@ -74,12 +74,18 @@ to your local machine. The same can be done with the Molgenis backend:
     kubectl port-forward svc/dev-lifelines-molgenis 8080:8080 --namespace dev-lifelines
     kubectl port-forward svc/backend-lifelines-minio 9000:9000 --namespace backend-lifelines
 
-#### Manually push to Nexus
+#### Push to Nexus / Docker.io
 
-You can manually create tagged Docker images and push them to the Nexus registry,
-and run it as pod on the cluster:
+Versions are deployed as docker images on Nexus and Docker.io. Nexus is used
+for deployment; Docker.io for production. Manually create tagged Docker images
+with:
 
-    # Password is in the fault
+    # Docker.io
+    docker build . --tag molgenis/molgenis-py-lifelines-transform:0.45.0
+    docker push molgenis/molgenis-py-lifelines-transform:0.45.0
+    docker push molgenis/molgenis-py-lifelines-transform:latest
+
+    # Nexus
     docker login registry.molgenis.org
     docker build . --tag registry.molgenis.org/molgenis/lifelines-transform:dev
     docker push registry.molgenis.org/molgenis/lifelines-transform:dev
