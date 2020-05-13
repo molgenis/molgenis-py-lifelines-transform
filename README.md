@@ -74,7 +74,7 @@ to your local machine. The same can be done with the Molgenis backend:
     kubectl port-forward svc/dev-lifelines-molgenis 8080:8080 --namespace dev-lifelines
     kubectl port-forward svc/backend-lifelines-minio 9000:9000 --namespace backend-lifelines
 
-#### Push Nexus / Docker.io
+#### Push Nexus or Docker.io
 
 Versions are deployed as docker images on Nexus and Docker.io. Nexus is used
 for deployment; Docker.io for production. Manually create tagged Docker images
