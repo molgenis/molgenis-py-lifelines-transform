@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 import logging
 import json
 import os
-import sys
 import time
 
 import download
@@ -10,28 +9,37 @@ from lifelines_transform import __version__
 from transform import Transform
 from upload import Upload
 
-startTime = time.time()
 
+execution_start_time = time.time()
 project_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../'))
 
+# Use UTC time for all logging.
+logging.Formatter.converter = time.gmtime
+
 log = logging.getLogger('transform')
-FORMAT = '[%(levelname)s] %(asctime)-15s %(message)s'
-formatter = logging.Formatter(FORMAT)
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=FORMAT)
+# Format datetime in logs to ISO-String.
+formatter = logging.Formatter('%(asctime)s.%(msecs)03dZ [%(levelname)s] %(message)s', '%Y-%m-%dT%H:%M:%S')
+
 log_filename = 'transform-%s.log' % datetime.today().strftime('%Y-%m-%d')
+file_handler = logging.FileHandler(os.path.join(project_dir, 'logs', log_filename))
+file_handler.setFormatter(formatter)
 
-handler = logging.FileHandler(os.path.join(project_dir, 'logs', log_filename))
-handler.setFormatter(formatter)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
 
-log.addHandler(handler)
+# Default log level.
+log.setLevel(logging.DEBUG)
+
+log.addHandler(file_handler)
+log.addHandler(console_handler)
+
 log.info('transform version: %s' % __version__)
 
 config_locations = [
     os.path.join(project_dir, 'config.json'),
     os.path.join(project_dir, '.config', 'config.json'),
 ]
-
 
 config = None
 for config_location in config_locations:
@@ -47,6 +55,9 @@ if not config:
         log.error('=> %s' % config_location)
     exit(1)
 
+
+log.info('loglevel: %s' % config['log_level'])
+log.setLevel(getattr(logging, config['log_level']))
 
 config['project_dir'] = project_dir
 config['src_dir'] = os.path.join(project_dir, config['src_dir'])
@@ -105,4 +116,4 @@ if config['actions']['upload']:
             log.error(e)
             exit(1)
 
-log.info('execution time: %s' % (timedelta(seconds=time.time() - startTime)))
+log.info('execution time: %s' % (timedelta(seconds=time.time() - execution_start_time)))
