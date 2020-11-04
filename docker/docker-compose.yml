@@ -1,26 +1,48 @@
 networks:
     mg_transform:
-      driver: bridge
+        driver: bridge
 
 services:
     transform:
-        container_name: mg_transform_transform
+        container_name: mg_transform
         image: molgenis/molgenis-py-lifelines-transform:latest
         volumes:
-            - ./catalog:/usr/src/app/catalog
-            - ./generated:/usr/src/app/generated
-            - ./config.json:/usr/src/app/config.json
+            - ../catalog:/usr/src/app/catalog
+            - ../generated:/usr/src/app/generated
+            - ../config.json:/usr/src/app/config.json
+        networks:
+            - mg_transform
+        depends_on:
+            - molgenis
+
+    nginx:
+        environment:
+            MOLGENIS_HOST: ${MOLGENIS_HOST:-host.docker.internal}
+        container_name: mg_nginx
+        image: nginx
+        networks:
+            - mg_transform
+        ports:
+            - 80:80
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/localhost.tpl:/tmp/localhost.tpl
+            - ../:/usr/share/nginx/html
+        command: >
+            /bin/bash -c "envsubst \"`for v in $$(compgen -v);do printf '$${%s} ' $$v;done`'\"
+            < /tmp/localhost.tpl
+            > /etc/nginx/localhost
+            && nginx -g 'daemon off;'"
 
     molgenis:
-        container_name: mg_transform_molgenis
+        container_name: mg_molgenis
         depends_on:
             - elasticsearch
             - minio
-            - opencpu
             - postgresql
+            - nginx
         environment:
             - molgenis.home=/home/molgenis
-            - opencpu.uri.host=opencpu
             - elasticsearch.transport.addresses=elasticsearch:9300
             - db_uri=jdbc:postgresql://postgresql/molgenis
             - db_user=molgenis
@@ -38,10 +60,11 @@ services:
             - 8080:8080
 
     postgresql:
-        container_name: mg_transform_postgresql
+        container_name: mg_postgresql
         environment:
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=molgenis
+            - POSTGRES_USER=molgenis
+            - POSTGRES_PASSWORD=molgenis
         image: postgres:11-alpine
         networks:
             - mg_transform
@@ -52,7 +75,7 @@ services:
             - postgresql:/var/lib/postgresql/data
 
     elasticsearch:
-        container_name: mg_transform_elasticsearch
+        container_name: mg_elasticsearch
         environment:
             - cluster.name=molgenis
             - bootstrap.memory_lock=true
@@ -75,8 +98,8 @@ services:
             - elasticsearch:/usr/share/elasticsearch/data
 
     minio:
+        container_name: mg_minio
         command: server /data
-        container_name: mg_transform_minio
         environment:
             MINIO_ACCESS_KEY: molgenis
             MINIO_SECRET_KEY: molgenis
@@ -87,18 +110,6 @@ services:
             - 9000:9000
         volumes:
             - minio:/data
-
-    opencpu:
-        container_name: mg_transform_opencpu
-        image: molgenis/opencpu:opencpu-release-2019-03-20_12-07-11
-        networks:
-            - mg_transform
-        ports:
-            - 8004:8004
-            - 8787:8787
-        volumes:
-            - ./opencpu/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
-            - ./opencpu/ports.conf:/etc/apache2/ports.conf
 
 version: "3.8"
 volumes:
