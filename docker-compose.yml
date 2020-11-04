@@ -1,0 +1,9 @@
+services:
+    transform:
+      container_name: transform
+      image: molgenis/molgenis-py-lifelines-transform:latest
+      volumes:
+        - ./catalog:/usr/src/app/catalog
+        - ./generated:/usr/src/app/generated
+        - ./config.json:/usr/src/app/config.json
+version: "3.8"
