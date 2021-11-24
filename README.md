@@ -12,6 +12,8 @@ It performs the following tasks:
 
 ## Development
 
+The script needs to be run using python version 3.7 
+
 ### Kubernetes
 
 There are 2 Kubernetes namespaces: **lifelines-catalog-test**, **lifelines-catalog-accept**

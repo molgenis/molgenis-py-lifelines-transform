@@ -93,15 +93,22 @@ class Transform:
             engine='python', error_bad_lines=not self.config['debug_mode']
         )
         subsections = pd.concat(objs=[
-            variable[['SUBSECTION_NAME']],
-            variable[['ALT_SUBSECTION_NAME']].rename(columns={'ALT_SUBSECTION_NAME': 'SUBSECTION_NAME'})
-        ]).dropna().drop_duplicates().sort_values(by=['SUBSECTION_NAME'])\
-            .rename(columns={'SUBSECTION_NAME': 'name'}).reset_index()
+            variable[['SUBSECTION_NAME', 'WIKI_HYPERLINK']],
+            variable[['ALT_SUBSECTION_NAME', 'WIKI_HYPERLINK']]
+            .rename(columns={'ALT_SUBSECTION_NAME': 'SUBSECTION_NAME'}),
+        ]).dropna(how='all', subset=['SUBSECTION_NAME']) \
+          .drop_duplicates(subset=['SUBSECTION_NAME']) \
+          .sort_values(by=['SUBSECTION_NAME']) \
+          .rename(columns={'SUBSECTION_NAME': 'name'}) \
+          .rename(columns={'WIKI_HYPERLINK': 'wiki'}) \
+          .reset_index()
         subsections['id'] = subsections.index
         subsections.to_csv(
             path.join(self.config['target_dir'], 'sub_section.tsv'),
-            columns=['id', 'name'], sep='\t', index=False
+            columns=['id', 'name', 'wiki'], sep='\t', index=False
         )
+
+        subsections.drop(columns=['wiki'], inplace=True)
 
         return subsections
 

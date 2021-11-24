@@ -9,6 +9,7 @@ id	id		section	int		False	True	True	TRUE	True	True	False	True
 name	name		section	string		True	False	True	FALSE	False	False	False	False													
 id	id		sub_section	int		False	True	True	TRUE	True	True	False	True													
 name	name		sub_section	string		True	False	True	FALSE	False	False	False	False													
+wiki	wiki	href to lifelines wiki with aditional subsection info	sub_section	string		True	False	True	FALSE	False	False	False														
 id	id		subsection_variable	int		False	True	True	TRUE	True	True	False	True													
 subsection_id	subsection_id		subsection_variable	xref	sub_section	False	False	True	FALSE	False	False	False	False													
 variable_id	variable_id		subsection_variable	xref	variable	False	False	True	FALSE	False	False	False	False													
