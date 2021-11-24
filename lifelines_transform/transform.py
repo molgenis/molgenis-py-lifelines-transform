@@ -97,12 +97,12 @@ class Transform:
             variable[['ALT_SUBSECTION_NAME', 'WIKI_HYPERLINK']]
               .rename(columns={'ALT_SUBSECTION_NAME': 'SUBSECTION_NAME'}),
         ]) \
-          .dropna(how='all', subset=['SUBSECTION_NAME']) \
-          .drop_duplicates(subset=['SUBSECTION_NAME']) \
-          .sort_values(by=['SUBSECTION_NAME']) \
-          .rename(columns={'SUBSECTION_NAME': 'name'}) \
-          .rename(columns={'WIKI_HYPERLINK': 'wiki'}) \
-          .reset_index() 
+        .dropna(how='all', subset=['SUBSECTION_NAME']) \
+        .drop_duplicates(subset=['SUBSECTION_NAME']) \
+        .sort_values(by=['SUBSECTION_NAME']) \
+        .rename(columns={'SUBSECTION_NAME': 'name'}) \
+        .rename(columns={'WIKI_HYPERLINK': 'wiki'}) \
+          .reset_index()
         subsections['id'] = subsections.index
         subsections.to_csv(
             path.join(self.config['target_dir'], 'sub_section.tsv'),
